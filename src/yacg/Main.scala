@@ -71,7 +71,8 @@ class Main extends SimpleApplication {
 
   def initLight: Unit = {
     val light = new DirectionalLight()
-    light.setDirection((new Vector3f(-1.0f, 1f, 1.0f)).normalize())
+    light.setDirection((new Vector3f(0.3f, -0.5f, 0.4f)).normalize())
+    // @TODO why doesnt this do anything?
     //rootNode.addLight(light);
   }
 
