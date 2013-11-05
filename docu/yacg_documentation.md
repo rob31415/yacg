@@ -34,7 +34,7 @@ einem projektteilnehmer können durchaus mehrere rollen zugeteilt sein
 
 ### beteiligung
 
-wenn du lust hast, mitzumachen, lies dich ein, komm am offenen tag in den hackerspace, lerne die beteiligten kennen, suche dir eine oder mehrere rollen im projekt aus und leg los :-D !
+wenn du lust hast, mitzumachen, lies dich ein, komm am offenen tag in den hackerspace, lerne die beteiligten kennen (denn ein gespräch ist in diesem fall verboser als schrift-doku), suche dir eine oder mehrere rollen im projekt aus und leg los :-D !
 
 wir freuen uns auf mitstreiter.
 
@@ -106,6 +106,7 @@ seine frau kocht komplementär das essen bis 12 etc...
 
 wir brauchen eine darstellung, ein system um diese simulation gezielt kontrollieren zu können. der spieler beeinflusst npcs, bring so abweichungen in die vorprogrammierten routineabläufe und daraus emergiert quasi dann die story.
 
+näheres siehe weiter unten.
 
 
 ### story
@@ -269,7 +270,7 @@ erschaffung neuer dynamischer quests (wollen wir nicht, ist ausserhalb unseres s
 
 todo: fmod ausprobieren
 
-#### ai
+#### ai research
 
 was sollen die beteiligten npc tun? mit welchen gegenständen wie interagieren?
 was und wie implementieren?
@@ -320,6 +321,101 @@ nichts weist darauf hin, dass aktuelle games soetwas benutzen
 https://github.com/idmillington/aicore
 
 gibts bei aigamedev was verwendbares?
+
+
+#### ai
+
+
+
+##### prerequisites
+- npc = independently simulated actor (implemented with akka for scala)
+- at least 1 residence per actor
+- at least 1 job per actor
+- social graph
+- - qualification per relation (known, friend, sibling, sexpartner, spouse, partent, ...)
+- - wir verwenden nodejs (cypher-abfragesprache) um das netz der aktoren abzubilden und um personen via relationen zu finden
+- - http://www.heise.de/developer/artikel/Abfragesprachen-fuer-Graphendatenbanken-1985666.html?artikelseite=4
+- - so können wir per lifescript (siehe unten) dinge sagen, wie z.b. "gehe zu freund"
+- time-system
+- - timestamp-format day/hh:mm
+- items (lots of things like tools (hammer...), containers (bowl, glass...), etc.)
+- resource-system?
+- character-mood system?
+
+
+##### attributes per actor / npc
+- id (actor handle)
+- name
+- job-moniker (descriptive social function)
+- relations (list of qualified relations to other actors (actor-id, relation-id))
+- lifescript (scripted, environment-dependent (time, social-graph, resources) low level npc commands)
+- mood?
+- inventory?
+
+
+##### low level npc commands
+- move (location-alias (eg "to_home" or "to_town_center") || world-x,world-y || social-graph-node)
+- do (animation-moniker (e.g. talk, eat, bow down, sit, stand, lie down, move arms, etc), area, interaction-moniker (take, drop, create, destroy))
+
+
+##### "lifescript"
+- general templates (for jobs)
+- special purpose for key-npcs. the low level npc commands for key-npcs are not only dependent of environment but also by story progress
+
+
+
+##### lifescript example
+
+###### graph-node
+
+	actor-id=1, sex=m, name="butch cassidy", job-moniker="butcher", relations=((id=24,spouse), (id=32,sexpartner), (id=41,friend), (id=50,parent)), lifescript="butcher.ls", ...
+
+###### file: butcher.ls
+
+	# mo-fr daily routine. on sa sitting in the garden all day, on sunday don't get up at all.
+
+	location_alias=to_home,4023,5821		#x,y coords
+	location_alias=to_work,3202,3948
+	location_alias=to_bar,3002,2700
+	location_alias=to_garden,4026,5817
+
+	[schedule]
+	@6:15
+	move to_work
+	do move_arms,1*1    					#move around randomly in a square area of 1x1 meters while looking busy
+	@12:00
+	move to_bar
+	do eat
+	@12:30
+	do talk
+	@12:45
+	move to_work
+	@16:30
+	move to_social_graph_node any_friend	#pick one randomly from list
+	do talk
+	@19:07+-15m         					#random time modifier
+	move to_home
+	do sleep
+
+	[schedule]
+	@6/8:00									#day 6 = saturday
+	move to_garden
+	do sit
+	@6/19:00
+	move to_social_graph_node spouse
+	do talk
+	@6/22:00
+	move to_home
+	do sleep
+
+	[schedule]
+	@7/0:00									#day 7 = sunday
+	do sleep
+
+
+- in skyrim ist sowas in der art via klicki-bunti dialog realisiert 
+- siehe http://www.youtube.com/watch?v=gZHKyxzVvHo&list=PLJEChX1DEaM1Cg9DS8SCQlE_kKL3SA6_Y&index=1)
+
 
 
 ### implementation big picture : aufbau genereller, tragender strukturen und interaktionen dazwischen 
