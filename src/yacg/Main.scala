@@ -36,8 +36,7 @@ class Main extends SimpleApplication {
 
 
   override def simpleInitApp: Unit = {
-    //@TODO obviously use relative path 
-    assetManager.registerLocator("/home/rob/development/eclipse/workspace/yacg_2/assets/", classOf[FileLocator])
+    assetManager.registerLocator(System.getProperty("user.dir") + "/assets/", classOf[FileLocator])
 
     //@TODO terrain collision detection for walking on it
     flyCam.setMoveSpeed(200f)
