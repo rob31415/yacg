@@ -95,12 +95,13 @@ class Main extends SimpleApplication with ActionListener {
 	player.setJumpSpeed(20)
 	player.setFallSpeed(30)
 	player.setGravity(30)
-	player.setPhysicsLocation(new Vector3f(0,-10,0))
+	player.setPhysicsLocation(new Vector3f(0,100,100))
 	 
 	System.out.println("bulletAppState phyicspace.add terrain")
 	bulletAppState.getPhysicsSpace().add(terrain);
 	System.out.println("bulletAppState ps.add player")
 	bulletAppState.getPhysicsSpace().add(player);   
+
   }
 
   
