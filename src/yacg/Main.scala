@@ -28,6 +28,9 @@ import com.jme3.terrain.heightmap.AbstractHeightMap
 import com.jme3.terrain.heightmap.ImageBasedHeightMap
 import com.jme3.math.FastMath
 import com.jme3.scene.Mesh
+import akka.actor._
+
+
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -54,7 +57,7 @@ class Main extends SimpleApplication with ActionListener {
   var camDir: Vector3f = new Vector3f()
   var camLeft: Vector3f = new Vector3f()
   var walkDirection: Vector3f = new Vector3f()
-  private var boxie: Geometry = _
+  var boxie: Geometry = _
   private var boxie_location = new Vector3f(0, 450, 0)
 
   override def simpleInitApp: Unit = {
@@ -250,7 +253,8 @@ class Main extends SimpleApplication with ActionListener {
   }
 
   def doCubeStuff(tpf: Float) {
-    boxie.move(10*tpf, 0, 0)
+//    boxie.move(0.016f*10.0f, 0, 0)
+//    boxie.move(10*tpf, 0, 0)
   }
 
   def createCube() {
@@ -259,6 +263,9 @@ class Main extends SimpleApplication with ActionListener {
     boxie.addControl(new RigidBodyControl(1.0f))
     bulletAppState.getPhysicsSpace().add(boxie)
     rootNode.attachChild(boxie)
+
+    val cubemover = ActorSystem("System").actorOf(Props(new CubeMover(boxie)), "CubeMover")
+    cubemover ! Go
   }
 
   def createGeometryFromMesh(mesh: Mesh, name: String, loc: Vector3f, color: ColorRGBA): Geometry =
@@ -272,6 +279,30 @@ class Main extends SimpleApplication with ActionListener {
     }
 
 }
+
+case object Go
+
+class CubeMover(boxie: Geometry) extends Actor {
+  
+    def receive = {
+      case Go =>
+        println("Hello World!")
+        while(true)
+        {
+        	Thread.sleep(160)
+        	boxie.move(0.016f*10.0f, 0, 0)          
+        }
+    }
+    /*
+     * uncaught exception thrown in thread LWJGL Renderer Thread,5,main
+     * illegalstateexception: scene graph is not properly updated for rendering.
+     * state was changed after rottnode.updategeometricstate() call.
+     * make shure you do not modify the scene from another thread!
+     * problem spatial name: root node
+     * 
+     * uncomment "cubemover ! Go" to make it work
+     */
+  }
 
 
 

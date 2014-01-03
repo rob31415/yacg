@@ -48,5 +48,35 @@
 	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/vecmath.jar"/>
 	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/xmlpull-xpp3.jar"/>
 	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/xstream.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-actor_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-agent_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-camel_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-channels-experimental_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-cluster_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-contrib_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-dataflow_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-durable-mailboxes-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-file-mailbox_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-kernel_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-mailboxes-common_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-multi-node-testkit_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-remote_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-remote-tests_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-slf4j_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-testkit_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-transactor_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/akka-zeromq_2.10-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/camel-core-2.10.3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/config-1.0.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/jna-3.0.9.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/jnr-constants-0.8.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/netty-3.6.6.Final.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/scalabuff-runtime_2.10-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/scala-reflect-2.10.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/scala-stm_2.10-0.7.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/uncommons-maths-1.2.2a.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse/workspace/yacg_2/lib/zeromq-scala-binding_2.10-0.0.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
