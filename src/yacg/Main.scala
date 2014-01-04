@@ -29,7 +29,9 @@ import com.jme3.terrain.heightmap.ImageBasedHeightMap
 import com.jme3.math.FastMath
 import com.jme3.scene.Mesh
 import akka.actor._
-
+import yacg.control_walker
+import java.util.concurrent.Callable
+import yacg.CubeMover
 
 
 object Main {
@@ -59,7 +61,10 @@ class Main extends SimpleApplication with ActionListener {
   var walkDirection: Vector3f = new Vector3f()
   var boxie: Geometry = _
   private var boxie_location = new Vector3f(0, 450, 0)
+  var cubemover: ActorRef = _
+  var fw = new float_wrap(1.0f)	
 
+  
   override def simpleInitApp: Unit = {
     assetManager.registerLocator(System.getProperty("user.dir") + "/assets/", classOf[FileLocator])
 
@@ -216,6 +221,7 @@ class Main extends SimpleApplication with ActionListener {
     } else if (binding.equals("Up")) {
       up = isPressed;
     } else if (binding.equals("Down")) {
+      boxie.setc
       down = isPressed;
     } else if (binding.equals("Jump")) {
       if (isPressed) { player.jump(); }
@@ -249,12 +255,17 @@ class Main extends SimpleApplication with ActionListener {
     player.setWalkDirection(walkDirection);
     cam.setLocation(player.getPhysicsLocation());
 
-    doCubeStuff(tpf);
+    //move it right here in this thread. simple standard.
+    //doCubeStuff(tpf);
+
+    //cubemover.asInstanceOf[CubeMover] tpf = tpf;	//doesnt work
+    fw tpf = tpf;	//so do it via byref-wrapped value
+
   }
 
   def doCubeStuff(tpf: Float) {
-//    boxie.move(0.016f*10.0f, 0, 0)
-//    boxie.move(10*tpf, 0, 0)
+      boxie.move(0.016f*10.0f, 0, 0)
+    //boxie.move(tpf   *10, 0, 0)
   }
 
   def createCube() {
@@ -263,9 +274,14 @@ class Main extends SimpleApplication with ActionListener {
     boxie.addControl(new RigidBodyControl(1.0f))
     bulletAppState.getPhysicsSpace().add(boxie)
     rootNode.attachChild(boxie)
-
-    val cubemover = ActorSystem("System").actorOf(Props(new CubeMover(boxie)), "CubeMover")
+    
+    //cubemover = new CubeMover(boxie, this)
+    val prop = Props(new CubeMover(boxie, this, fw))
+    cubemover = ActorSystem("System").actorOf(prop, "CubeMover")
+//    ((cubemover)cubemover_actor) t
     cubemover ! Go
+
+    //boxie.addControl(new control_walker())
   }
 
   def createGeometryFromMesh(mesh: Mesh, name: String, loc: Vector3f, color: ColorRGBA): Geometry =
@@ -279,31 +295,6 @@ class Main extends SimpleApplication with ActionListener {
     }
 
 }
-
-case object Go
-
-class CubeMover(boxie: Geometry) extends Actor {
-  
-    def receive = {
-      case Go =>
-        println("Hello World!")
-        while(true)
-        {
-        	Thread.sleep(160)
-        	boxie.move(0.016f*10.0f, 0, 0)          
-        }
-    }
-    /*
-     * uncaught exception thrown in thread LWJGL Renderer Thread,5,main
-     * illegalstateexception: scene graph is not properly updated for rendering.
-     * state was changed after rottnode.updategeometricstate() call.
-     * make shure you do not modify the scene from another thread!
-     * problem spatial name: root node
-     * 
-     * uncomment "cubemover ! Go" to make it work
-     */
-  }
-
 
 
 
