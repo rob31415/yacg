@@ -28,10 +28,12 @@ import com.jme3.terrain.heightmap.AbstractHeightMap
 import com.jme3.terrain.heightmap.ImageBasedHeightMap
 import com.jme3.math.FastMath
 import com.jme3.scene.Mesh
-import akka.actor._
-import yacg.control_walker
 import java.util.concurrent.Callable
-import yacg.CubeMover
+import yacg.igo.float_wrap
+import yacg.igo.Igo
+import yacg.events._
+import yacg.igo.Igo_repo
+import yacg.lifescipt.Lifescript_scheduler
 
 
 object Main {
@@ -59,36 +61,41 @@ class Main extends SimpleApplication with ActionListener {
   var camDir: Vector3f = new Vector3f()
   var camLeft: Vector3f = new Vector3f()
   var walkDirection: Vector3f = new Vector3f()
-  var boxie: Geometry = _
-  private var boxie_location = new Vector3f(0, 450, 0)
-  var cubemover: ActorRef = _
+  var boxie: Igo = _
   var fw = new float_wrap(1.0f)	
 
   
   override def simpleInitApp: Unit = {
     assetManager.registerLocator(System.getProperty("user.dir") + "/assets/", classOf[FileLocator])
 
-    //@TODO terrain collision detection for walking on it
     //flyCam.setMoveSpeed(500f)
+
+    bulletAppState = new BulletAppState()
+    System.out.println("attach bulletappstate to statemgr")
+    stateManager.attach(bulletAppState)
 
     initMaterial
     initTerrain
+    initGeo
     initCamera
     //initLight
     setUpKeys
-    createCube
+    Lifescript_scheduler init
+  }
+  
+  def initGeo
+  {
+    Igo_repo init(rootNode, bulletAppState, assetManager, this.enqueue)
+    boxie = Igo_repo get_igo_by_id(1)
+    boxie run
   }
 
-  def initCamera: Unit = {
+  def initCamera {
     this.getCamera().setLocation(new Vector3f(0, 10, 0))
-    this.getCamera().lookAt(boxie_location, Vector3f.UNIT_Y)
+    //this.getCamera().lookAt(boxie.geometry.getLocalTranslation(), Vector3f.UNIT_Y)
     this.viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f))
     this.getCamera().setFrustumFar(10000.0f)
     //flyCam.setEnabled(false)
-
-    bulletAppState = new BulletAppState()
-    stateManager.attach(bulletAppState)
-    System.out.println("attach bulletappstate to statemgr")
 
     val capsuleShape = new CapsuleCollisionShape(1.5f, 6f, 1)
 
@@ -111,7 +118,7 @@ class Main extends SimpleApplication with ActionListener {
 
   }
 
-  def initMaterial: Unit = {
+  def initMaterial {
     //@TODO explain, where this j3md is and what it does
     this.mat_terrain = new Material(this.assetManager, "Common/MatDefs/Terrain/HeightBasedTerrain.j3md") //
 
@@ -124,14 +131,14 @@ class Main extends SimpleApplication with ActionListener {
     this.mat_terrain.setFloat("terrainSize", 512)
   }
 
-  def initLight: Unit = {
+  def initLight {
     val light = new DirectionalLight()
     light.setDirection((new Vector3f(0.3f, -0.5f, 0.4f)).normalize())
     // @TODO why doesnt this do anything?
     //rootNode.addLight(light);
   }
 
-  def initTerrain: Unit = {
+  def initTerrain {
 
     this.terrain = new TerrainGrid("terrain", 512 + 1, 1024 + 1, new ImageTileLoader(assetManager,
       new Namer() {
@@ -196,17 +203,21 @@ class Main extends SimpleApplication with ActionListener {
 
   }
 
-  def setUpKeys: Unit = {
+  def setUpKeys {
     inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
     inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
     inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
     inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
     inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+    inputManager.addMapping("g", new KeyTrigger(KeyInput.KEY_G));
+    inputManager.addMapping("h", new KeyTrigger(KeyInput.KEY_H));
     inputManager.addListener(this, "Left");
     inputManager.addListener(this, "Right");
     inputManager.addListener(this, "Up");
     inputManager.addListener(this, "Down");
     inputManager.addListener(this, "Jump");
+    inputManager.addListener(this, "g");
+    inputManager.addListener(this, "h");
   }
 
   /**
@@ -221,10 +232,19 @@ class Main extends SimpleApplication with ActionListener {
     } else if (binding.equals("Up")) {
       up = isPressed;
     } else if (binding.equals("Down")) {
-      boxie.setc
       down = isPressed;
     } else if (binding.equals("Jump")) {
       if (isPressed) { player.jump(); }
+    }
+    
+    if(binding == "g")
+    {
+    	boxie put new Event(false, 'move)
+    }
+
+    if(binding == "h")
+    {
+    	boxie put new Event(false, 'stop)
     }
   }
 
@@ -236,7 +256,7 @@ class Main extends SimpleApplication with ActionListener {
    * We also make sure here that the camera moves with player.
    */
   //@Override
-  override def simpleUpdate(tpf: Float): Unit = {
+  override def simpleUpdate(tpf: Float) {
     camDir.set(cam.getDirection()).multLocal(2.6f);
     camLeft.set(cam.getLeft()).multLocal(0.4f);
     walkDirection.set(0, 0, 0);
@@ -255,44 +275,9 @@ class Main extends SimpleApplication with ActionListener {
     player.setWalkDirection(walkDirection);
     cam.setLocation(player.getPhysicsLocation());
 
-    //move it right here in this thread. simple standard.
-    //doCubeStuff(tpf);
-
-    //cubemover.asInstanceOf[CubeMover] tpf = tpf;	//doesnt work
-    fw tpf = tpf;	//so do it via byref-wrapped value
-
+    boxie.fw.tpf = tpf
   }
 
-  def doCubeStuff(tpf: Float) {
-      boxie.move(0.016f*10.0f, 0, 0)
-    //boxie.move(tpf   *10, 0, 0)
-  }
-
-  def createCube() {
-    var b = new Box(Vector3f.ZERO, 4, 4, 4);
-    boxie = createGeometryFromMesh(b, "box", boxie_location, ColorRGBA.Yellow)
-    boxie.addControl(new RigidBodyControl(1.0f))
-    bulletAppState.getPhysicsSpace().add(boxie)
-    rootNode.attachChild(boxie)
-    
-    //cubemover = new CubeMover(boxie, this)
-    val prop = Props(new CubeMover(boxie, this, fw))
-    cubemover = ActorSystem("System").actorOf(prop, "CubeMover")
-//    ((cubemover)cubemover_actor) t
-    cubemover ! Go
-
-    //boxie.addControl(new control_walker())
-  }
-
-  def createGeometryFromMesh(mesh: Mesh, name: String, loc: Vector3f, color: ColorRGBA): Geometry =
-    {
-      var geom = new Geometry(name, mesh)
-      var mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md")
-      mat.setColor("Color", color)
-      geom.setMaterial(mat)
-      geom.setLocalTranslation(loc)
-      geom;
-    }
 
 }
 

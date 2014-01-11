@@ -1,0 +1,5 @@
+package yacg
+
+object Player {
+
+}
