@@ -11,6 +11,7 @@ import com.jme3.asset._
 import java.util.concurrent.Future
 import java.util.concurrent.Callable
 import yacg.Npc_bill_dauterive
+import com.jme3.terrain.geomipmap.TerrainGrid
 
 object Igo_repo {
 
@@ -20,18 +21,25 @@ object Igo_repo {
   var assetmgr: AssetManager = _
   var enqueue: (Callable[Unit]) => Future[Unit] = _
   var npc_1: Npc_bill_dauterive = _
+  var terrain: TerrainGrid = _
 
-  def init(root_node: Node, bulletappstate: BulletAppState, assetmgr: AssetManager, enqueue: (Callable[Unit]) => Future[Unit]) {
+  def init(root_node: Node,
+    bulletappstate: BulletAppState,
+    assetmgr: AssetManager,
+    enqueue: (Callable[Unit]) => Future[Unit],
+    terrain: TerrainGrid) {
+
     this.rootNode = root_node
     this.bulletAppState = bulletappstate
     this.assetmgr = assetmgr
     this.enqueue = enqueue
+    this.terrain = terrain
   }
 
   def get_igo_by_id(id: Int): Igo =
     {
       if (npc_1 == null) {
-        npc_1 = new Npc_bill_dauterive(1, enqueue)
+        npc_1 = new Npc_bill_dauterive(1, terrain, enqueue)
         bulletAppState.getPhysicsSpace().add(npc_1.geo)
         rootNode.attachChild(npc_1.geo)
       }

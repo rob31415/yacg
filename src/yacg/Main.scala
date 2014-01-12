@@ -34,6 +34,7 @@ import yacg.igo.Igo
 import yacg.events._
 import yacg.igo.Igo_repo
 import yacg.lifescipt.Lifescript_scheduler
+import com.jme3.math.Vector2f
 
 
 object Main {
@@ -51,7 +52,6 @@ class Main extends SimpleApplication with ActionListener {
 
   private var mat_terrain: Material = _
   private var terrain: TerrainGrid = _
-  //    private var terrain: TerrainQuad = _
   private var bulletAppState: BulletAppState = _
   private var left: Boolean = false;
   private var right: Boolean = false;
@@ -85,7 +85,7 @@ class Main extends SimpleApplication with ActionListener {
   
   def initGeo
   {
-    Igo_repo init(rootNode, bulletAppState, assetManager, this.enqueue)
+    Igo_repo init(rootNode, bulletAppState, assetManager, this.enqueue, terrain)
     boxie = Igo_repo get_igo_by_id(1)
     boxie run
   }
@@ -239,7 +239,7 @@ class Main extends SimpleApplication with ActionListener {
     
     if(binding == "g")
     {
-    	boxie put new Event(false, 'move)
+    	boxie put new Event(false, 'moveto, new Vector2f(player.getPhysicsLocation().x, player.getPhysicsLocation().z))
     }
 
     if(binding == "h")

@@ -14,18 +14,21 @@ import java.util.concurrent.Future
 import yacg.igo.Igo
 import yacg.events._
 import yacg.igo.Igo_repo
+import com.jme3.math.Vector2f
+import com.jme3.terrain.geomipmap.TerrainGrid
 
-
-class Npc_bill_dauterive(igo_id: Int, enqueue: (Callable[Unit]) => Future[Unit])
+class Npc_bill_dauterive(igo_id: Int, terrain: TerrainGrid, enqueue: (Callable[Unit]) => Future[Unit])
   extends Igo(1, enqueue) {
 
-  val box = new Box(Vector3f.ZERO, 4, 4, 4);
-  geo = Igo_repo.createGeometryFromMesh(box, "box", new Vector3f(0, 450, 0), ColorRGBA.Yellow)
+  val box = new Box(Vector3f.ZERO, 4, 4, 4)
+  geo = Igo_repo.createGeometryFromMesh(box, "box", new Vector3f(0, 150, 0), ColorRGBA.Yellow)
   geo.addControl(new RigidBodyControl(1.0f))
+
+  var target: Vector2f = _
 
   override def handle(event: Event): Boolean = {
 
-    if (event.data == 'move) {
+    if (event.data == 'moveto) {
 
       if (worker_process_running) {
         println("W already running")
@@ -37,16 +40,47 @@ class Npc_bill_dauterive(igo_id: Int, enqueue: (Callable[Unit]) => Future[Unit])
             Thread sleep ((fw.tpf * 1000) toLong)
             Thread `yield`
 
-            //concurrency error from LWGL
-            //geometry.move(fw.tpf * 10.0f, 0, 0)
+            if (target == null) {
+              target = event.location
+            } else {
+              var current_location = new Vector2f(geo.getLocalTranslation().x, geo.getLocalTranslation().z)
+              var direction = target subtract current_location
 
-            val callable = new Callable[Unit]() {
-              def call() {
-                geo.move(10 * fw.tpf, 0, 0)
+              if (direction.length < 1f) {
+                target = null;
+                worker_process_running = false;
+              } else {
+                direction = direction.normalize
+                direction.mult(0.5f)
+                println(direction.toString())
+
+                var x = direction.x
+                var y = 0f
+                var z = direction.y
+
+                var move = new Vector3f(x, y, z)
+
+                val callable = new Callable[Unit]() {
+                  def call() {
+                    //geo.move(10 * fw.tpf, 0, 0)
+
+                    geo.move(move)
+
+                    x = geo.getLocalTranslation().x
+                    y = 6.0f + terrain.getHeightmapHeight(new Vector2f(geo.getLocalTranslation().x, geo.getLocalTranslation().z))
+                    z = geo.getLocalTranslation().z
+                    geo.setLocalTranslation(x, y, z)
+
+                    //println(x, y, z)
+                  }
+                }
+                enqueue(callable)
               }
+
             }
-            enqueue(callable)
+
           }
+
         }
 
       }
@@ -58,13 +92,17 @@ class Npc_bill_dauterive(igo_id: Int, enqueue: (Callable[Unit]) => Future[Unit])
       if (worker_process_running) {
         println("terminating W")
         worker_process_running = false
+        target = null
       } else {
         println("nonsense")
       }
 
     }
 
+    //ignore all other event-types
+
     true
 
   }
+
 }
