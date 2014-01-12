@@ -39,7 +39,7 @@ object Igo_repo {
   def get_igo_by_id(id: Int): Igo =
     {
       if (npc_1 == null) {
-        npc_1 = new Npc_bill_dauterive(1, terrain, enqueue)
+        npc_1 = new Npc_bill_dauterive(1, terrain, assetmgr, enqueue)
         bulletAppState.getPhysicsSpace().add(npc_1.geo)
         rootNode.attachChild(npc_1.geo)
       }

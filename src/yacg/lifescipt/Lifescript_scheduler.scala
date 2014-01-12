@@ -10,13 +10,14 @@ import yacg.igo.Igo_repo
 // dispatch events to npcs in their due time
 object Lifescript_scheduler {
 
+  // this determines how fast in game time is relative to realworld time
   val thread_sleep_in_milli_seconds = 250
   //  var npc_events = Map[Int, List[Event]]()
-  //  var times = Map[Time, Map[Int, Int]]()
+  //  var times = Map[Time, Map[Int, List[Event]]()
 
   def init {}
 
-  val test_event_list = new Event(false, 'move) :: new Event(false, 'animate) :: Nil
+  val test_event_list = Nil //new Event(false, 'some_event_from_lss) :: new Event(false, 'another_event_from_lss) :: Nil
   val test_npc_events = Map(1 -> test_event_list)
   val times = Map(new Time(0, 1, 34) -> test_npc_events)
 

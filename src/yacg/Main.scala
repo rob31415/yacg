@@ -35,7 +35,8 @@ import yacg.events._
 import yacg.igo.Igo_repo
 import yacg.lifescipt.Lifescript_scheduler
 import com.jme3.math.Vector2f
-
+import com.jme3.collision.CollisionResults
+import com.jme3.math.Ray
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -61,10 +62,9 @@ class Main extends SimpleApplication with ActionListener {
   var camDir: Vector3f = new Vector3f()
   var camLeft: Vector3f = new Vector3f()
   var walkDirection: Vector3f = new Vector3f()
-  var boxie: Igo = _
-  var fw = new float_wrap(1.0f)	
+  var npc_bill: Igo = _
+  var fw = new float_wrap(1.0f)
 
-  
   override def simpleInitApp: Unit = {
     assetManager.registerLocator(System.getProperty("user.dir") + "/assets/", classOf[FileLocator])
 
@@ -80,18 +80,25 @@ class Main extends SimpleApplication with ActionListener {
     initCamera
     //initLight
     setUpKeys
-    Lifescript_scheduler init
+    Lifescript_scheduler.init
+    createPickMark
   }
-  
-  def initGeo
-  {
-    Igo_repo init(rootNode, bulletAppState, assetManager, this.enqueue, terrain)
-    boxie = Igo_repo get_igo_by_id(1)
-    boxie run
+
+  def createPickMark {
+    val box = new Box(Vector3f.ZERO, 2, 2, 2)
+    val geo = Igo_repo.createGeometryFromMesh(box, "pick_mark", new Vector3f(0, 0, 0), ColorRGBA.Red)
+    geo.setLocalTranslation(settings.getWidth() / 2, settings.getHeight() / 2, 0);
+    guiNode.attachChild(geo);
+  }
+
+  def initGeo {
+    Igo_repo init (rootNode, bulletAppState, assetManager, this.enqueue, terrain)
+    npc_bill = Igo_repo get_igo_by_id (1)
+    npc_bill run
   }
 
   def initCamera {
-    this.getCamera().setLocation(new Vector3f(0, 10, 0))
+    this.getCamera().setLocation(new Vector3f(0, 1000, 0))
     //this.getCamera().lookAt(boxie.geometry.getLocalTranslation(), Vector3f.UNIT_Y)
     this.viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f))
     this.getCamera().setFrustumFar(10000.0f)
@@ -103,16 +110,12 @@ class Main extends SimpleApplication with ActionListener {
     //player = new BetterCharacterControl(1.0f,1.0f,1.0f) //capsuleShape, 0.05f)
     //player.setGravity(new Vector3f(0,-10,0))
     player = new CharacterControl(capsuleShape, 0.05f)
-    player.setPhysicsSpace(bulletAppState.getPhysicsSpace())
-    //player.
 
     player.setJumpSpeed(20)
     player.setFallSpeed(30)
     player.setGravity(30)
-    player.setPhysicsLocation(new Vector3f(0, 100, 100))
+    player.setPhysicsLocation(new Vector3f(0, 1000, 100))
 
-    System.out.println("bulletAppState phyicspace.add terrain")
-    bulletAppState.getPhysicsSpace().add(terrain);
     System.out.println("bulletAppState ps.add player")
     bulletAppState.getPhysicsSpace().add(player);
 
@@ -187,7 +190,7 @@ class Main extends SimpleApplication with ActionListener {
 
     this.terrain.setMaterial(mat_terrain)
     this.terrain.setLocalTranslation(0, 0, 0)
-    //this.terrain.setLocalScale(10f, 3f, 10f)
+    this.terrain.setLocalScale(10f, 3f, 10f)
     System.out.println("add terrain to rootnode")
     this.rootNode.attachChild(this.terrain)
 
@@ -200,6 +203,8 @@ class Main extends SimpleApplication with ActionListener {
     //val terrainCollisionShape = new HeightfieldCollisionShape(terrain.getHeightMap(), terrain.getLocalScale())
     //val terrain_phy = new RigidBodyControl(terrainCollisionShape, 0f)
     //this.terrain.addControl(terrain_phy);
+    System.out.println("bulletAppState phyicspace.add terrain")
+    bulletAppState.getPhysicsSpace().add(terrain);
 
   }
 
@@ -236,16 +241,34 @@ class Main extends SimpleApplication with ActionListener {
     } else if (binding.equals("Jump")) {
       if (isPressed) { player.jump(); }
     }
-    
-    if(binding == "g")
-    {
-    	boxie put new Event(false, 'moveto, new Vector2f(player.getPhysicsLocation().x, player.getPhysicsLocation().z))
+
+    if (binding == "g") {
+      npc_bill put new Event(false, 'moveto, pick)
     }
 
-    if(binding == "h")
-    {
-    	boxie put new Event(false, 'stop)
+    if (binding == "h") {
+      npc_bill put new Event(true, 'stop)
     }
+
+  }
+
+  def pick: Vector2f = {
+    val results = new CollisionResults()
+    val ray = new Ray(cam.getLocation(), cam.getDirection())
+    rootNode.collideWith(ray, results)
+
+    var x = player.getPhysicsLocation().x
+    var y = player.getPhysicsLocation().z
+    println("****" , x, y)
+
+    if (results.size() > 0) {
+      val target = results.getClosestCollision().getGeometry()
+      x = results.getClosestCollision().getContactPoint().x
+      y = results.getClosestCollision().getContactPoint().z
+      println("****" + target.getName(), x, y)
+    }
+
+    new Vector2f(x, y)
   }
 
   /**
@@ -257,8 +280,8 @@ class Main extends SimpleApplication with ActionListener {
    */
   //@Override
   override def simpleUpdate(tpf: Float) {
-    camDir.set(cam.getDirection()).multLocal(2.6f);
-    camLeft.set(cam.getLeft()).multLocal(0.4f);
+    camDir.set(cam.getDirection()).multLocal(6.6f);
+    camLeft.set(cam.getLeft()).multLocal(2.4f);
     walkDirection.set(0, 0, 0);
     if (left) {
       walkDirection.addLocal(camLeft);
@@ -275,9 +298,8 @@ class Main extends SimpleApplication with ActionListener {
     player.setWalkDirection(walkDirection);
     cam.setLocation(player.getPhysicsLocation());
 
-    boxie.fw.tpf = tpf
+    npc_bill.fw.tpf = tpf
   }
-
 
 }
 
