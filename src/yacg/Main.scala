@@ -37,6 +37,7 @@ import yacg.lifescipt.Lifescript_scheduler
 import com.jme3.math.Vector2f
 import com.jme3.collision.CollisionResults
 import com.jme3.math.Ray
+import com.jme3.input.controls.MouseButtonTrigger
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -223,6 +224,9 @@ class Main extends SimpleApplication with ActionListener {
     inputManager.addListener(this, "Jump");
     inputManager.addListener(this, "g");
     inputManager.addListener(this, "h");
+    inputManager.addMapping("mouse-l", new MouseButtonTrigger(0))
+    inputManager.addListener(this, "mouse-l")
+    
   }
 
   /**
@@ -242,11 +246,15 @@ class Main extends SimpleApplication with ActionListener {
       if (isPressed) { player.jump(); }
     }
 
-    if (binding == "g") {
+    if (binding == "mouse-l" && !isPressed) {
       npc_bill put new Event(false, 'moveto, pick)
     }
 
-    if (binding == "h") {
+    if (binding == "g" && !isPressed) {
+      npc_bill put new Event(false, 'moveto, new Vector2f(player.getPhysicsLocation().x, player.getPhysicsLocation().z))
+    }
+
+    if (binding == "h" && !isPressed) {
       npc_bill put new Event(true, 'stop)
     }
 
@@ -259,7 +267,7 @@ class Main extends SimpleApplication with ActionListener {
 
     var x = player.getPhysicsLocation().x
     var y = player.getPhysicsLocation().z
-    println("****" , x, y)
+    println("****", x, y)
 
     if (results.size() > 0) {
       val target = results.getClosestCollision().getGeometry()

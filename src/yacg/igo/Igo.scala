@@ -11,6 +11,6 @@ class float_wrap(var tpf: Float) // wrap byval with a byref
 abstract class Igo(igo_id: Int, assetManager: AssetManager, enqueue: (Callable[Unit]) => Future[Unit]) extends Lifescript_interpreter {
 
   var fw = new float_wrap(0.016f)	//experience value on core i3, HD-graphics
-  var geo: Spatial = _
+  var geo: Spatial = _				//Geometry extends Spatial
 
 }

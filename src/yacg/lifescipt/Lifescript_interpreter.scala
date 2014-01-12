@@ -30,15 +30,15 @@ trait Lifescript_interpreter {
   }
 
   def terminate {
-    worker_process_running
+    running = false
   }
 
   private def loop() {
     while (running) {
       {
-        println("LSI sleeping")
+        println("LSI sleeping", q.size())
         signal.await()
-        println("LSI waking up")
+        println("LSI waking up", q.size())
         val event = q.peek()
 
         if (event.elevated_prio) {
