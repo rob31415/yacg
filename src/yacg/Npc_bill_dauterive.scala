@@ -111,6 +111,8 @@ class Npc_bill_dauterive(igo_id: Int,
         //geo.move(10 * fw.tpf, 0, 0)
 
         geo.move(direction)
+        //@TODO: rotate in movement-direction
+        //geo.lookAt(geo.getLocalTranslation, direction)
 
         val x = geo.getLocalTranslation().x
         val y = 4 + (3.0f * terrain.getHeightmapHeight(new Vector2f(geo.getLocalTranslation().x, geo.getLocalTranslation().z)))

@@ -38,6 +38,18 @@ import com.jme3.math.Vector2f
 import com.jme3.collision.CollisionResults
 import com.jme3.math.Ray
 import com.jme3.input.controls.MouseButtonTrigger
+import com.jme3.light.AmbientLight
+import com.jme3.asset.TextureKey
+import com.jme3.util.SkyFactory
+import com.jme3.renderer.queue.RenderQueue.Bucket
+import com.jme3.scene.Spatial
+import com.jme3.renderer.queue.RenderQueue.ShadowMode
+import com.jme3.shadow.DirectionalLightShadowRenderer
+import com.jme3.shadow.DirectionalLightShadowFilter
+import com.jme3.post.FilterPostProcessor
+import com.jme3.shadow.PssmShadowRenderer
+import com.jme3.shadow.PssmShadowRenderer.FilterMode
+import com.jme3.system.AppSettings
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -45,8 +57,16 @@ object Main {
     import java.util.logging.{ Logger, Level }
     Logger.getLogger("").setLevel(Level.WARNING);
 
+    val settings = new AppSettings(true);
+    settings.setResolution(800, 600);
+    settings.setBitsPerPixel(32);
+    settings.setFullscreen(false)
+
     val app = new Main
+    app.setShowSettings(false);
+    app.setSettings(settings);
     app.start
+
   }
 }
 
@@ -79,10 +99,28 @@ class Main extends SimpleApplication with ActionListener {
     initTerrain
     initGeo
     initCamera
-    //initLight
+    initLight
     setUpKeys
     Lifescript_scheduler.init
     createPickMark
+    createSky
+    createStaticModels
+  }
+
+  def createStaticModels {
+    val geo = assetManager.loadModel("Models/house1.j3o")
+    geo.setLocalScale(new Vector3f(24, 24, 24))
+    geo.setLocalTranslation(new Vector3f(-350, 200, 470))
+    geo.addControl(new RigidBodyControl(1.0f))
+    bulletAppState.getPhysicsSpace().add(geo)
+    rootNode.attachChild(geo)
+  }
+
+  def createSky {
+    val sky = SkyFactory.createSky(assetManager, "Textures/misc/skydome2.bmp", true)
+    rootNode.attachChild(sky)
+    sky.setQueueBucket(Bucket.Sky)
+    sky.setCullHint(Spatial.CullHint.Never)
   }
 
   def createPickMark {
@@ -101,6 +139,7 @@ class Main extends SimpleApplication with ActionListener {
   def initCamera {
     this.getCamera().setLocation(new Vector3f(0, 1000, 0))
     //this.getCamera().lookAt(boxie.geometry.getLocalTranslation(), Vector3f.UNIT_Y)
+    //this.getCamera().lookAt(new Vector3f(-370, 200, 500), Vector3f.UNIT_Y)
     this.viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f))
     this.getCamera().setFrustumFar(10000.0f)
     //flyCam.setEnabled(false)
@@ -115,7 +154,7 @@ class Main extends SimpleApplication with ActionListener {
     player.setJumpSpeed(20)
     player.setFallSpeed(30)
     player.setGravity(30)
-    player.setPhysicsLocation(new Vector3f(0, 1000, 100))
+    player.setPhysicsLocation(new Vector3f(-300, 200, 400))
 
     System.out.println("bulletAppState ps.add player")
     bulletAppState.getPhysicsSpace().add(player);
@@ -123,31 +162,86 @@ class Main extends SimpleApplication with ActionListener {
   }
 
   def initMaterial {
-    //@TODO explain, where this j3md is and what it does
+    // http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
+
+    /*
     this.mat_terrain = new Material(this.assetManager, "Common/MatDefs/Terrain/HeightBasedTerrain.j3md") //
-
-    //@TODO: use a intentionally designed texture for the whole terrain
-    val rock = this.assetManager.loadTexture("Textures/misc/stone.jpg")
-    rock.setWrap(WrapMode.Repeat)
-
+    map_diffuse.setWrap(WrapMode.Repeat)
     this.mat_terrain.setTexture("slopeColorMap", rock)
     this.mat_terrain.setFloat("slopeTileFactor", 32)
     this.mat_terrain.setFloat("terrainSize", 512)
+     */
+
+    mat_terrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
+    mat_terrain.setBoolean("isTerrainGrid", false)
+    mat_terrain.setBoolean("useTriPlanarMapping", false)
+    mat_terrain.setFloat("Shininess", 0.0f)
+
+    val map_diffuse = assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01.jpg")
+    map_diffuse.setWrap(WrapMode.Repeat)
+    mat_terrain.setTexture("DiffuseMap", map_diffuse)
+    mat_terrain.setFloat("DiffuseMap_0_scale", 64)
+
+    val map_normal = assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01_hn.jpg")
+    map_diffuse.setWrap(WrapMode.Repeat)
+    mat_terrain.setTexture("NormalMap", map_normal)
+
+    mat_terrain.setTexture("AlphaMap", assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01_mn.jpg"))
+
   }
 
   def initLight {
     val light = new DirectionalLight()
-    light.setDirection((new Vector3f(0.3f, -0.5f, 0.4f)).normalize())
-    // @TODO why doesnt this do anything?
-    //rootNode.addLight(light);
+    //light.setDirection((new Vector3f(0.3f, -0.5f, 0.4f)).normalize())
+    light.setDirection((new Vector3f(-0.1f, -0.4f, -1)))
+    light.setColor(ColorRGBA.Yellow) //new ColorRGBA(200 / 255, 150 / 255, 50 / 255, 1))
+    rootNode.addLight(light)
+
+    val light2 = new AmbientLight()
+    light2.setColor(ColorRGBA.Red)
+    rootNode.addLight(light2)
+
+    //initShadow(light)
   }
 
+  //@TODO: shadow, y u no work !?
+  def initShadow(sun: DirectionalLight) {
+    val shadowmap_size = 256
+    /*
+    val dlsr = new DirectionalLightShadowRenderer(assetManager, shadowmap_size, 3);
+    dlsr.setLight(sun);
+    viewPort.addProcessor(dlsr);
+
+    val dlsf = new DirectionalLightShadowFilter(assetManager, shadowmap_size, 3);
+    dlsf.setLight(sun);
+    dlsf.setEnabled(true);
+    
+    val fpp = new FilterPostProcessor(assetManager);
+    fpp.addFilter(dlsf);
+    viewPort.addProcessor(fpp);
+*/
+
+    val pssm = new PssmShadowRenderer(assetManager, 4096, 3);
+    pssm.setDirection(new Vector3f(-1, -1, -1).normalizeLocal());
+    pssm.setFilterMode(FilterMode.PCF4);
+    viewPort.addProcessor(pssm);
+
+    terrain.setShadowMode(ShadowMode.CastAndReceive)
+    rootNode.setShadowMode(ShadowMode.Receive)
+  }
+
+  // @TODO: get the scale right, design a huge heightfield
+  // @TODO: do good-looking texture-splatting
+  // see http://www.gamasutra.com/blogs/AndreyMishkinis/20130716/196339/Advanced_Terrain_Texture_Splatting.php
+  // and http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
+  // section TerrainLighting.j3md
+
+  //space time causation human-intent
   def initTerrain {
 
     this.terrain = new TerrainGrid("terrain", 512 + 1, 1024 + 1, new ImageTileLoader(assetManager,
       new Namer() {
         def getName(x: Int, y: Int): String = {
-          //@TODO don't always the same heightfield 
           //return "Interface/Scenes/TerrainMountains/terrain_" + x + "_" + y + ".png";
           val x_patch = Math.abs(x) % 2;
           val y_patch = Math.abs(y) % 2;
@@ -206,7 +300,6 @@ class Main extends SimpleApplication with ActionListener {
     //this.terrain.addControl(terrain_phy);
     System.out.println("bulletAppState phyicspace.add terrain")
     bulletAppState.getPhysicsSpace().add(terrain);
-
   }
 
   def setUpKeys {
@@ -226,13 +319,9 @@ class Main extends SimpleApplication with ActionListener {
     inputManager.addListener(this, "h");
     inputManager.addMapping("mouse-l", new MouseButtonTrigger(0))
     inputManager.addListener(this, "mouse-l")
-    
+
   }
 
-  /**
-   * These are our custom actions triggered by key presses.
-   * We do not walk yet, we just keep track of the direction the user pressed.
-   */
   def onAction(binding: String, isPressed: Boolean, tpf: Float) {
     if (binding.equals("Left")) {
       left = isPressed;
@@ -279,14 +368,6 @@ class Main extends SimpleApplication with ActionListener {
     new Vector2f(x, y)
   }
 
-  /**
-   * This is the main event loop--walking happens here.
-   * We check in which direction the player is walking by interpreting
-   * the camera direction forward (camDir) and to the side (camLeft).
-   * The setWalkDirection() command is what lets a physics-controlled player walk.
-   * We also make sure here that the camera moves with player.
-   */
-  //@Override
   override def simpleUpdate(tpf: Float) {
     camDir.set(cam.getDirection()).multLocal(6.6f);
     camLeft.set(cam.getLeft()).multLocal(2.4f);

@@ -9,6 +9,7 @@ import ExecutionContext.Implicits.global
 
 // lifescript interpreter (per NPC)
 trait Lifescript_interpreter {
+  //@TODO: no new operator for every event (maybe use java.util.concurrent.locks.Condition?)
   private var signal = new CountDownLatch(1)
   private var running = false
   private val q = new PriorityBlockingQueue[Event]

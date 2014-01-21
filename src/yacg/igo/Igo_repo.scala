@@ -15,12 +15,14 @@ import com.jme3.terrain.geomipmap.TerrainGrid
 
 object Igo_repo {
 
-  //bäh, igitt! there must be another way!
+  //bäh, igitt! there must be another way to init object-members!
   var rootNode: Node = _
   var bulletAppState: BulletAppState = _
   var assetmgr: AssetManager = _
   var enqueue: (Callable[Unit]) => Future[Unit] = _
   var npc_1: Npc_bill_dauterive = _
+  var npc_2: Npc_bill_dauterive = _
+  var npc_3: Npc_bill_dauterive = _
   var terrain: TerrainGrid = _
 
   def init(root_node: Node,
@@ -40,6 +42,7 @@ object Igo_repo {
     {
       if (npc_1 == null) {
         npc_1 = new Npc_bill_dauterive(1, terrain, assetmgr, enqueue)
+        npc_1.geo.setLocalTranslation(new Vector3f(-300,10,400))
         bulletAppState.getPhysicsSpace().add(npc_1.geo)
         rootNode.attachChild(npc_1.geo)
       }
