@@ -15,7 +15,7 @@ import com.jme3.terrain.geomipmap.TerrainGrid
 
 object Igo_repo {
 
-  //bäh, igitt! there must be another way to init object-members!
+  //@TODO: bäh, igitt! there must be another way to init object-members!
   var rootNode: Node = _
   var bulletAppState: BulletAppState = _
   var assetmgr: AssetManager = _

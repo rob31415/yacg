@@ -1,0 +1,83 @@
+
+interessiert an computergames, 3D-engines, social-graphs, graph-db's, scala-lang, multithreading, simulations, storywriting, 2D/3D-graphic-design, reactive, agile, foss?
+then go ahead and join our yacg-team.
+
+
+
+
+scene graph (SG)
+
+der SG ist eine repräsentation der objekte im spiel, quasi mundgerecht für die grafikengine.
+
+man stellt damit den räumlichen bezug von objekten her.
+so kann die grafikengine zb objekte auf einem tisch mitverschieben, wenn sich der tisch verschiebt, denn der tisch ist parent der objekte auf ihm.
+oder so kann die engine auch dinge cullen (geometrie- und texel- und statedaten erst gar nicht erst an die grafikkarte schicken, die sowieso nicht auf dem bildschirm herauskommen würden, weil sie zb. hinter dem player sind).
+
+
+jmonkey unterscheidet zwischen mobile node (zb npcs) und immobile nodes (zb häuser).
+
+
+http://hub.jmonkeyengine.org/wiki/doku.php/jme3:scenegraph_for_dummies
+
+
+
+In-game-objects graph ("IGOG")
+
+dieses ding ist eine repräsentation der objekte im spiel, quasi mundgerecht für die story bzw. das gameplay, welches die story umsetzt.
+
+wir wollen zb im lifescript sagen können: "cowboy frank, gehe zu irgendeinem deiner freunde".
+
+dazu müssen wir zunächst wissen, welche freunde frank hat.
+dazu eignet sich ein social-graph.
+wir implementieren einen social-graph mit hilfe von neo4j, einer graph-datenbank.
+jeder node/vertex in der graph-db repräsentiert einen npc und hat entsprechende attribute.
+und die kanten repräsentieren u.a. beziehungen der personen zueinander.
+
+so kann man herausfinden, welche freunde frank hat, wo diese sich gerade befinden, per zufall einen davon aussuchen und frank dorthinlaufen lassen.
+
+man kann sich auch vorstellen, dass kanten erzeugt werden oder entfernt werden - vlt vergehen und entstehen freundschaften zwischen npcs, abhängig vom verlauf der story.
+
+
+
+
+zusammenfassung SG und IGOG:
+
+repräsentationen der objekte im spiel:
+
+Scene Graph (SG): grafikengine-affin
+In-game-objects graph ("IGOG"): story/gameplay-affin
+
+
+die daten bzgl eines objekts im spiel sind nicht redundant - bis auf die id des objektes.
+d.h. z.b., räumliche daten finden sich ausschliesslich im SG, beziehungs-stati ausschliesslich im IGOG.
+
+es gibt unterschiedliche, zentrale "dinger", die entweder auf dem SG oder auf dem IGOG arbeiten, d.h. diese datenstrukturen manipulieren oder daraus lesen.
+
+
+
+hier eine übersicht (zur erläuterung der akronyme siehe oben):
+
+
+      LS  IGOG    SG
+
+LSS   ro
+LSI        rw     ro
+WT                rw
+
+
+
+LSS läuft im haupt-thread der app und lebt solange wie die app lebt.
+
+
+class some_npc extends LSI
+d.h.
+-es gibt so viele LSI instanzen wie npcs
+-jeder npc hat die fähigkeiten, die im LSI impl. sind,
+-incl der fähigkeit, auf nachrichten vom LSS zu reagieren
+jeder LSI läuft in einem eigenen thread.
+
+
+worker threads (WT) manipulieren räumliche koordinaten.
+sie werden von LSI gespawnt.
+sie sind disposable - dh. sie beenden sich selbst oder werden ggf gekillt.
+

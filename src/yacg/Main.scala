@@ -50,6 +50,9 @@ import com.jme3.post.FilterPostProcessor
 import com.jme3.shadow.PssmShadowRenderer
 import com.jme3.shadow.PssmShadowRenderer.FilterMode
 import com.jme3.system.AppSettings
+import com.jme3.niftygui.NiftyJmeDisplay
+import de.lessvoid.nifty.screen._
+import de.lessvoid.nifty._
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -70,10 +73,8 @@ object Main {
   }
 }
 
-class Main extends SimpleApplication with ActionListener {
+class Main extends SimpleApplication with ActionListener with ScreenController {
 
-  private var mat_terrain: Material = _
-  private var terrain: TerrainGrid = _
   private var bulletAppState: BulletAppState = _
   private var left: Boolean = false;
   private var right: Boolean = false;
@@ -85,6 +86,7 @@ class Main extends SimpleApplication with ActionListener {
   var walkDirection: Vector3f = new Vector3f()
   var npc_bill: Igo = _
   var fw = new float_wrap(1.0f)
+  private var nifty: Nifty = _
 
   override def simpleInitApp: Unit = {
     assetManager.registerLocator(System.getProperty("user.dir") + "/assets/", classOf[FileLocator])
@@ -95,8 +97,11 @@ class Main extends SimpleApplication with ActionListener {
     System.out.println("attach bulletappstate to statemgr")
     stateManager.attach(bulletAppState)
 
-    initMaterial
-    initTerrain
+    Terrain.assetManager = assetManager
+    Terrain.camera = getCamera
+    Terrain.bulletAppState = bulletAppState
+    rootNode.attachChild(Terrain.init)
+
     initGeo
     initCamera
     initLight
@@ -105,6 +110,14 @@ class Main extends SimpleApplication with ActionListener {
     createPickMark
     createSky
     createStaticModels
+    initGui
+  }
+
+  def initGui {
+    val niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort)
+    nifty = niftyDisplay.getNifty()
+    nifty.fromXml("Interface/gui.xml", "start", this)
+    guiViewPort.addProcessor(niftyDisplay)
   }
 
   def createStaticModels {
@@ -114,6 +127,22 @@ class Main extends SimpleApplication with ActionListener {
     geo.addControl(new RigidBodyControl(1.0f))
     bulletAppState.getPhysicsSpace().add(geo)
     rootNode.attachChild(geo)
+
+    val geo2 = assetManager.loadModel("Models/shrub1.j3o")
+    geo2.setLocalScale(new Vector3f(4, 2, 4))
+    geo2.setLocalTranslation(new Vector3f(-181, 200, 657))
+    geo2.rotate(180f * FastMath.DEG_TO_RAD, 0f, 0f) //.setLocalRotation(new Quarternion())
+    geo2.addControl(new RigidBodyControl(1.0f))
+    bulletAppState.getPhysicsSpace().add(geo2)
+    rootNode.attachChild(geo2)
+
+    /*
+     * -181.19359,567.86365
+     * -237.26608,580.549
+     * -201.3031,463.122
+     * -271.74405,491.764
+     * 
+     */
   }
 
   def createSky {
@@ -131,7 +160,7 @@ class Main extends SimpleApplication with ActionListener {
   }
 
   def initGeo {
-    Igo_repo init (rootNode, bulletAppState, assetManager, this.enqueue, terrain)
+    Igo_repo init (rootNode, bulletAppState, assetManager, this.enqueue, Terrain.terrain)
     npc_bill = Igo_repo get_igo_by_id (1)
     npc_bill run
   }
@@ -161,44 +190,14 @@ class Main extends SimpleApplication with ActionListener {
 
   }
 
-  def initMaterial {
-    // http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
-
-    /*
-    this.mat_terrain = new Material(this.assetManager, "Common/MatDefs/Terrain/HeightBasedTerrain.j3md") //
-    map_diffuse.setWrap(WrapMode.Repeat)
-    this.mat_terrain.setTexture("slopeColorMap", rock)
-    this.mat_terrain.setFloat("slopeTileFactor", 32)
-    this.mat_terrain.setFloat("terrainSize", 512)
-     */
-
-    mat_terrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
-    mat_terrain.setBoolean("isTerrainGrid", false)
-    mat_terrain.setBoolean("useTriPlanarMapping", false)
-    mat_terrain.setFloat("Shininess", 0.0f)
-
-    val map_diffuse = assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01.jpg")
-    map_diffuse.setWrap(WrapMode.Repeat)
-    mat_terrain.setTexture("DiffuseMap", map_diffuse)
-    mat_terrain.setFloat("DiffuseMap_0_scale", 64)
-
-    val map_normal = assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01_hn.jpg")
-    map_diffuse.setWrap(WrapMode.Repeat)
-    mat_terrain.setTexture("NormalMap", map_normal)
-
-    mat_terrain.setTexture("AlphaMap", assetManager.loadTexture("Textures/misc/cracked-dirt/cracked-dirt-texture-01_mn.jpg"))
-
-  }
-
   def initLight {
     val light = new DirectionalLight()
-    //light.setDirection((new Vector3f(0.3f, -0.5f, 0.4f)).normalize())
-    light.setDirection((new Vector3f(-0.1f, -0.4f, -1)))
-    light.setColor(ColorRGBA.Yellow) //new ColorRGBA(200 / 255, 150 / 255, 50 / 255, 1))
+    light.setDirection((new Vector3f(-0.5f, -0.05f, -0.2f).normalizeLocal))
+    light.setColor(ColorRGBA.Yellow.mult(1.7f)) //new ColorRGBA(200 / 255, 150 / 255, 50 / 255, 1))
     rootNode.addLight(light)
 
     val light2 = new AmbientLight()
-    light2.setColor(ColorRGBA.Red)
+    light2.setColor(ColorRGBA.Red.mult(1.6f))
     rootNode.addLight(light2)
 
     //initShadow(light)
@@ -207,7 +206,7 @@ class Main extends SimpleApplication with ActionListener {
   //@TODO: shadow, y u no work !?
   def initShadow(sun: DirectionalLight) {
     val shadowmap_size = 256
-    /*
+
     val dlsr = new DirectionalLightShadowRenderer(assetManager, shadowmap_size, 3);
     dlsr.setLight(sun);
     viewPort.addProcessor(dlsr);
@@ -215,91 +214,20 @@ class Main extends SimpleApplication with ActionListener {
     val dlsf = new DirectionalLightShadowFilter(assetManager, shadowmap_size, 3);
     dlsf.setLight(sun);
     dlsf.setEnabled(true);
-    
+
     val fpp = new FilterPostProcessor(assetManager);
     fpp.addFilter(dlsf);
     viewPort.addProcessor(fpp);
-*/
 
+    /*
     val pssm = new PssmShadowRenderer(assetManager, 4096, 3);
     pssm.setDirection(new Vector3f(-1, -1, -1).normalizeLocal());
     pssm.setFilterMode(FilterMode.PCF4);
     viewPort.addProcessor(pssm);
+*/
 
-    terrain.setShadowMode(ShadowMode.CastAndReceive)
+    Terrain.terrain.setShadowMode(ShadowMode.CastAndReceive)
     rootNode.setShadowMode(ShadowMode.Receive)
-  }
-
-  // @TODO: get the scale right, design a huge heightfield
-  // @TODO: do good-looking texture-splatting
-  // see http://www.gamasutra.com/blogs/AndreyMishkinis/20130716/196339/Advanced_Terrain_Texture_Splatting.php
-  // and http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
-  // section TerrainLighting.j3md
-
-  //space time causation human-intent
-  def initTerrain {
-
-    this.terrain = new TerrainGrid("terrain", 512 + 1, 1024 + 1, new ImageTileLoader(assetManager,
-      new Namer() {
-        def getName(x: Int, y: Int): String = {
-          //return "Interface/Scenes/TerrainMountains/terrain_" + x + "_" + y + ".png";
-          val x_patch = Math.abs(x) % 2;
-          val y_patch = Math.abs(y) % 2;
-          // System.out.println("" + x + ", " +y + " -> " + x_patch + ", " + y_patch)
-          "Textures/heightmap/heightmap_" + x_patch + "_" + y_patch + ".png"
-        }
-      }));
-    val control = new TerrainGridLodControl(this.terrain, getCamera())
-    control.setLodCalculator(new DistanceLodCalculator(512, 2.7f)) // patch size, and a multiplier
-
-    terrain.addListener(new TerrainGridListener() {
-
-      def gridMoved(newCenter: Vector3f) {
-      }
-
-      def tileAttached(cell: Vector3f, quad: TerrainQuad) {
-        while (quad.getControl(classOf[RigidBodyControl]) != null) {
-          quad.removeControl(classOf[RigidBodyControl]);
-        }
-        quad.addControl(new RigidBodyControl(new HeightfieldCollisionShape(quad.getHeightMap(), terrain.getLocalScale()), 0));
-        bulletAppState.getPhysicsSpace().add(quad);
-      }
-
-      def tileDetached(cell: Vector3f, quad: TerrainQuad) {
-        if (quad.getControl(classOf[RigidBodyControl]) != null) {
-          bulletAppState.getPhysicsSpace().remove(quad);
-          quad.removeControl(classOf[RigidBodyControl]);
-        }
-      }
-
-    });
-
-    /*
-    var heightMapImage = assetManager.loadTexture("Textures/heightmap/heightmap_0_0.png")
-    var heightmap = new ImageBasedHeightMap(heightMapImage.getImage());
-    heightmap.load();    
-    terrain = new TerrainQuad("Golfcourse", 65, 1025, heightmap.getHeightMap());    
-    val control = new TerrainLodControl(this.terrain, getCamera())
-    control.setLodCalculator( new DistanceLodCalculator(512, 2.7f) )  // patch size, and a multiplier
-* */
-
-    this.terrain.setMaterial(mat_terrain)
-    this.terrain.setLocalTranslation(0, 0, 0)
-    this.terrain.setLocalScale(10f, 3f, 10f)
-    System.out.println("add terrain to rootnode")
-    this.rootNode.attachChild(this.terrain)
-
-    //System.out.println("add lodctrlr to terrain")
-    this.terrain.addControl(control)
-
-    System.out.println("terrain.addctrl riidbocy")
-    terrain.addControl(new RigidBodyControl(0))
-
-    //val terrainCollisionShape = new HeightfieldCollisionShape(terrain.getHeightMap(), terrain.getLocalScale())
-    //val terrain_phy = new RigidBodyControl(terrainCollisionShape, 0f)
-    //this.terrain.addControl(terrain_phy);
-    System.out.println("bulletAppState phyicspace.add terrain")
-    bulletAppState.getPhysicsSpace().add(terrain);
   }
 
   def setUpKeys {
@@ -340,7 +268,8 @@ class Main extends SimpleApplication with ActionListener {
     }
 
     if (binding == "g" && !isPressed) {
-      npc_bill put new Event(false, 'moveto, new Vector2f(player.getPhysicsLocation().x, player.getPhysicsLocation().z))
+      //npc_bill put new Event(false, 'moveto, new Vector2f(player.getPhysicsLocation().x, player.getPhysicsLocation().z))
+      pick
     }
 
     if (binding == "h" && !isPressed) {
@@ -356,14 +285,14 @@ class Main extends SimpleApplication with ActionListener {
 
     var x = player.getPhysicsLocation().x
     var y = player.getPhysicsLocation().z
-    println("****", x, y)
 
     if (results.size() > 0) {
       val target = results.getClosestCollision().getGeometry()
       x = results.getClosestCollision().getContactPoint().x
       y = results.getClosestCollision().getContactPoint().z
-      println("****" + target.getName(), x, y)
     }
+
+    println("pick: ", x, y)
 
     new Vector2f(x, y)
   }
@@ -390,6 +319,21 @@ class Main extends SimpleApplication with ActionListener {
     npc_bill.fw.tpf = tpf
   }
 
+  def bind(nifty: Nifty, screen: Screen) {
+    System.out.println("bind( " + screen.getScreenId() + ")");
+  }
+
+  def onStartScreen() {
+    System.out.println("onStartScreen");
+  }
+
+  def onEndScreen() {
+    System.out.println("onEndScreen");
+  }
+
+  def quit() {
+    nifty.gotoScreen("end");
+  }
 }
 
 
