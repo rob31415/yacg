@@ -1,5 +1,0 @@
-package yacg
-
-object Player {
-
-}

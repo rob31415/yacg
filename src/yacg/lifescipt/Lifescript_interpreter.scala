@@ -5,10 +5,11 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.PriorityBlockingQueue
 import scala.concurrent._
 import ExecutionContext.Implicits.global
+import yacg.util.Logger
 //import scala.util.{ Success, Failure }
 
 // lifescript interpreter (per NPC)
-trait Lifescript_interpreter {
+trait Lifescript_interpreter extends Logger {
   //@TODO: no new operator for every event (maybe use java.util.concurrent.locks.Condition?)
   private var signal = new CountDownLatch(1)
   private var running = false
@@ -16,17 +17,24 @@ trait Lifescript_interpreter {
   protected var worker_process_running = false
 
   def put(event: Event) {
+    log_debug("fixin to put on q " + event.toString())
     q.put(event)
-    println("q put " + event.toString())
+    log_debug("well, i done put event on q right there")
     signal countDown
   }
 
+  // returns true if the event should be popped
   def handle(event: Event): Boolean
 
   def run {
     running = true
-    future {
-      loop
+    log_debug("starting thread for Lifescript_interpreter")
+    try {
+      future {
+        loop
+      }
+    } catch {
+      case e => this.log_error("", e)
     }
   }
 
@@ -37,15 +45,15 @@ trait Lifescript_interpreter {
   private def loop() {
     while (running) {
       {
-        println("LSI sleeping", q.size())
+        log_debug("LSI sleeping, qsize=" + q.size())
         signal.await()
-        println("LSI waking up", q.size())
+        log_debug("LSI waking up, qsize=" + q.size())
         val event = q.peek()
 
         if (event.elevated_prio) {
           handle_elevated_prio_event(event)
         } else {
-        	println("normal-prio event")
+          log_debug("normal-prio event")
           if (handle(event)) q.take
         }
         signal = new CountDownLatch(1)
@@ -53,19 +61,19 @@ trait Lifescript_interpreter {
     }
   }
 
-  private def event_comes_from_worker_thread(event: Event): Boolean = event.data == 'thread_ended
+  private def event_comes_from_worker_thread(event: Event): Boolean = event.event_type == 'thread_ended
 
   private def handle_elevated_prio_event(event: Event) {
     if (event_comes_from_worker_thread(event)) {
-      println("event from W")
+      log_debug("event from W")
       q.take()
       if (q.size > 0) if (handle(q.peek)) q.take
     } else {
       if (worker_process_running) {
-        println("terminating currently running W")
+        log_debug("terminating currently running W")
         worker_process_running = false
       }
-      println("clearing q")
+      log_debug("clearing q")
       q.clear()
       //@TODO: process event
     }
