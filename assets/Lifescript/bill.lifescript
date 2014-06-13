@@ -1,0 +1,12 @@
+include includes/farmer.lifescript
+
+@0/0h20
+#@6/9h00
+moveto lunch
+do someanim
+
+@7/8h10
+moveto lunch
+ do someanim
+
+that's a life

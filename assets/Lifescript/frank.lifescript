@@ -1,0 +1,13 @@
+include includes/farmer.lifescript
+
+#modelfile, name, type, start_x, start_y
+
+@0/0h20
+moveto lunch
+do someanim
+
+@7/8h10
+moveto lunch
+do someanim
+
+that's a life
