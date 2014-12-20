@@ -1,0 +1,15 @@
+def start
+	Partner.says "Howdy Partnerino! You up for some woik!?"
+	choiceGreeting
+end
+
+def choiceGreeting
+	choice({"Yeah, what u have in mind?" => :answer,
+		    "Nah, work is for idiots." => :exit})
+end
+
+def answer
+	Partner.says "K. dig a hole over yonder"
+	choice({"right. on it." => :exit,
+			"wat? nev-r!" => :exit})
+end

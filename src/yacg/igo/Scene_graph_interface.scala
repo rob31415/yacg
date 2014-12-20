@@ -100,7 +100,7 @@ object Scene_graph_interface extends Logger {
     getIgosByType("npc") foreach { igo => igo.fw.tpf = tpf }
   }
 
-  // it would be nice to specify the type and then to get a list of elements of that type as to not force users to cast 
+  // it would be nice to specify the type and then to get a list of elements of that type as to not force users to cast. (generics?)
   def getIgosByType(typeName: String = ""): scala.collection.mutable.ListBuffer[Igo] = {
     var retVal = new scala.collection.mutable.ListBuffer[Igo]
 

@@ -5,6 +5,8 @@ import org.jruby.embed.ScriptingContainer
 import yacg.gui.Gui
 import yacg.util.Logger
 import yacg.igog.Igog
+import java.nio.file.Files
+import java.nio.file.Paths
 
 object ContextGlobal {
   def knows(name: String): Boolean = false
@@ -37,8 +39,8 @@ class Partner(name: String) {
 }
 
 class Dialog(partner: String) extends Logger {
-
-  val fileContent = scala.io.Source.fromFile(yacg.Main.basepath_assets + "/Dialog/" + partner + ".dialogScript").mkString
+  log_debug("about to create new Dialog for id=" + partner)
+  val fileContent = scala.io.Source.fromFile(Dialog.getDialogScriptFilename(partner)).mkString
   val container = new ScriptingContainer()
   val player = new Player(null)
   container.put("Player", player)
@@ -73,14 +75,23 @@ class Dialog(partner: String) extends Logger {
   }
 }
 
-object Dialog {
+object Dialog extends Logger {
   private var dialog: Dialog = null
 
+  def getDialogScriptFilename(id: String): String = {
+    yacg.Main.basepath_assets + "/Dialog/" + id + ".dialogScript"
+  }
+
   def initiate(id: String): Dialog = {
-    if (!id.isEmpty()) {
-      Gui.showDialog()
+    if (id.isEmpty()) {
+      log_debug("no id given, can't initiate dialog")
+    } else {
       if (dialog == null) {
-        dialog = new Dialog(id)
+        if (Files.exists(Paths.get(getDialogScriptFilename(id)))) {
+          Gui.showDialog()
+          dialog = new Dialog(id)
+        } else
+          log_warn("no dialogScript for '" + id + "' - can't show dialog gui")
       }
     }
     dialog

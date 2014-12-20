@@ -22,6 +22,7 @@ import yacg.util.Svg
 import yacg.Main
 import yacg.dialogSystem.Dialog
 import yacg.gui.Gui
+import com.jme3.scene.Geometry
 
 object Player extends Logger {
   private var left: Boolean = false;
@@ -49,7 +50,7 @@ object Player extends Logger {
     player.setJumpSpeed(20)
     player.setFallSpeed(30)
     player.setGravity(10)
-    player.setPhysicsLocation(new Vector3f(-2561, 30, -831.6f))
+    player.setPhysicsLocation(new Vector3f(-3200, 100, -3300.6f)) //-2561, 30, -831.6f
 
     log_debug("bulletAppState ps.add player")
     jme_interface.bullet_app_state.getPhysicsSpace().add(player);
@@ -110,30 +111,62 @@ object Player extends Logger {
 
     if (!isPressed) {
       binding match {
-        case "mouse-l" => Scene_graph_interface.get_igo_by_id("frank").get.asInstanceOf[Npc].put(new Event_with_locationdata(true, 'moveto, pick(jme_interface.camera, jme_interface.root_node)))
+        case "mouse-l" => Scene_graph_interface.get_igo_by_id("frank").get.asInstanceOf[Npc].put(new Event_with_locationdata(true, 'moveto, getPickLocation()))
         case "p" => pick_output()
         case "t" => log_debug(In_game_clock.game_time.toString)
         case "o" => Svg.export_igog(Main.basepath_assets + "/yacg_igos.svg", Main.basepath_assets + "/Textures/heightmap2/heightmap_master_merica.png")
-        case "r" =>  Scene_graph_interface.refresh()
+        case "r" => Scene_graph_interface.refresh()
         // case "h" => Terrain.get_height_at(101, -302)
-        case "i" => {Svg.update_igog(Main.basepath_assets + "/yacg_igos.svg"); Scene_graph_interface.reinit() } 
-        case "y" => {log_debug(yacg.persistence.Db.dump); log_debug(Scene_graph_interface.dump_current_locations); Scene_graph_interface.getIgosByType()}
+        case "i" => { Svg.update_igog(Main.basepath_assets + "/yacg_igos.svg"); Scene_graph_interface.reinit() }
+        case "y" => { log_debug(yacg.persistence.Db.dump); log_debug(Scene_graph_interface.dump_current_locations); Scene_graph_interface.getIgosByType() }
         case "m" => Terrain.createMosaic(Main.basepath_assets + "/terrainTextureMosaic.png")
         case "c" => Dialog.initiate(findDialogPartnerId())
         case "return" => Dialog.pickChoice(Gui.getCurrentChoiceNumber())
-        case _ =>  //log_debug("ignored key " + binding)
+        case _ => //log_debug("ignored key " + binding)
       }
     }
 
   }
-  
+
+  // problem: only works for the bill-model. @TODO: get parent until one of them has an id (not name) or topmost
   def findDialogPartnerId(): String = {
-    // new Dialog(Scene_graph_interface.get_igo_by_id("bill").get)
-    "bill"
+    val results = new CollisionResults()
+    val ray = new Ray(jme_interface.camera.getLocation(), jme_interface.camera.getDirection())
+    jme_interface.root_node.collideWith(ray, results)
+    log_debug("pick result size=" + results.size())
+    if (results.size() > 0) {
+      val target = results.getClosestCollision().getGeometry().getParent().getParent()
+      if (target != null) {
+        val id: String = target.getUserData("id")
+        val distance = results.getClosestCollision.getDistance()
+        log_debug("pick target name=" + target.getName() + " id=" + id + " distance=" + distance)
+        if(distance < 75)
+        	if (id == null) return "" else return id.toString()
+        else
+        {
+          log_debug("dialog partner is too far away for a conversation")
+        }
+      }
+    }
+    ""
   }
 
+  /*
+  def findDialogPartnerId(): String = {
+    val geo = getPickGeo()
+    if (geo == None) {
+      ""
+    } else {
+      //val id: String = geo.get.getUserData[String]("id").toString()
+      val id: String = geo.get.getName()
+      log_debug("id=" + id)
+      if (id == null) "" else id
+    }
+  }
+  */
+
   def pick_output() {
-    val from_img = pick(jme_interface.camera, jme_interface.root_node)
+    val from_img = getPickLocation()
     val from_mesh = Terrain.get_mesh_height(from_img.x, from_img.z)
     log_debug("pick from img : " + from_img.x + ", " + from_img.y + ", " + from_img.z)
     log_debug("pick from mesh: " + from_img.x + ", " + from_mesh + ", " + from_img.z)
@@ -141,9 +174,9 @@ object Player extends Logger {
   }
 
   def update(camera: Camera, tpf: Float) {
-    camDir.set(camera.getDirection()).multLocal(1.0f);	//6.6f	56
-    camLeft.set(camera.getLeft()).multLocal(1.0f);	//2.4f	50
-    camUp.set(camera.getUp()).multLocal(1.0f);	//52
+    camDir.set(camera.getDirection()).multLocal(1.0f); //6.6f	56
+    camLeft.set(camera.getLeft()).multLocal(1.0f); //2.4f	50
+    camUp.set(camera.getUp()).multLocal(1.0f); //52
     walkDirection.set(0, 0, 0);
     if (left) {
       walkDirection.addLocal(camLeft);
@@ -166,7 +199,7 @@ object Player extends Logger {
     Scene_graph_interface.set_tpf_on_all_npcs(tpf)
   }
 
-  def pick(camera: Camera, root_node: Node): Vector3f = {
+  def pick_old(camera: Camera, root_node: Node): Vector3f = {
     val results = new CollisionResults()
     val ray = new Ray(camera.getLocation(), camera.getDirection())
     root_node.collideWith(ray, results)
@@ -185,6 +218,46 @@ object Player extends Logger {
     var y = Terrain.get_mesh_height(x, z)
 
     new Vector3f(x, y, z)
+  }
+
+  def pick(): CollisionResults = {
+    val results = new CollisionResults()
+    val ray = new Ray(jme_interface.camera.getLocation(), jme_interface.camera.getDirection())
+    jme_interface.root_node.collideWith(ray, results)
+    log_debug("pick result size=" + results.size())
+    results
+  }
+
+  // returns location where some object is hit and if no object was hit, the player position
+  def getPickLocation(): Vector3f = {
+    var x = player.getPhysicsLocation().x
+    var z = player.getPhysicsLocation().z
+    var collisionResults = pick()
+
+    if (collisionResults.size() > 0) {
+      val target = collisionResults.getClosestCollision().getGeometry()
+      x = collisionResults.getClosestCollision().getContactPoint().x
+      z = collisionResults.getClosestCollision().getContactPoint().z
+    } else {
+      log_warn("pick didn't collide with anything, using player position as default instead")
+    }
+
+    var y = Terrain.get_mesh_height(x, z)
+
+    new Vector3f(x, y, z)
+  }
+
+  // returns geometry of hit object
+  def getPickGeo(): Option[Geometry] = {
+    var collisionResults = pick()
+    if (collisionResults.size() > 0) {
+      val geo = collisionResults.getClosestCollision().getGeometry()
+      if (geo == null)
+        log_debug("no geo")
+      else
+        return Some(geo)
+    }
+    None
   }
 
 }

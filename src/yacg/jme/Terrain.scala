@@ -30,6 +30,7 @@ import com.jme3.terrain.heightmap.HillHeightMap
 import com.jme3.terrain.heightmap.AbstractHeightMap
 import scala.sys.process._
 import com.jme3.math.FastMath
+import com.jme3.math.ColorRGBA
 
 class Counter {
   private var layer_counter_diff = -1
@@ -232,8 +233,31 @@ object Terrain extends Logger {
     y.toFloat
   }
 
-  // http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
   def getTerrainMaterial(x: Int, y: Int, assetManager: AssetManager): Material = {
+    var retval: Material =
+      if (yacg.Configurator.terrainTextured)
+        getTerrainMaterialHi(x, y, assetManager)
+      else
+        getTerrainMaterialLow(assetManager)
+
+    if (yacg.Configurator.terrainWireframe) {
+      retval.getAdditionalRenderState().setWireframe(true);
+    }
+    
+  	retval
+  }
+
+  def getTerrainMaterialLow(assetManager: AssetManager): Material = {
+    mat_terrain = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    mat_terrain.setColor("Color", ColorRGBA.Green);
+    if (yacg.Configurator.terrainTextured) {
+      mat_terrain.getAdditionalRenderState().setWireframe(true);
+    }
+    mat_terrain
+  }
+
+  // http://hub.jmonkeyengine.org/wiki/doku.php/jme3:advanced:materials_overview
+  def getTerrainMaterialHi(x: Int, y: Int, assetManager: AssetManager): Material = {
 
     def addTexture(mapId: String, filename: String, mapScaleId: String = "", scale: Int = 0) {
       val texture = assetManager.loadTexture(filename)
@@ -247,9 +271,6 @@ object Terrain extends Logger {
     mat_terrain.setBoolean("useTriPlanarMapping", false)
     mat_terrain.setFloat("Shininess", 0.0f)
     mat_terrain.setBoolean("WardIso", true);
-    if (yacg.Configurator.terrainWireframe) {
-      mat_terrain.getAdditionalRenderState().setWireframe(true);
-    }
 
     val filenameAlpha1 = "Textures/terrain/heightmap/blend1/tile_blend_" + "%03d".format((y * Terrain.patch_number_of) + x) + ".png"
     mat_terrain.setTexture("AlphaMap", assetManager.loadTexture(filenameAlpha1))
@@ -298,7 +319,7 @@ object Terrain extends Logger {
   }
 
   def createVegetation(jme_interface: Jme_interface, terrainCellX: Integer, terrainCellY: Integer) = {
-  
+
     log_debug("createVegetation")
 
     val offsetX = patch_size * terrainCellX * Terrain.scale_z;

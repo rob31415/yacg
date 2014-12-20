@@ -129,23 +129,32 @@ class Main extends SimpleApplication with Logger with ActionListener with Jme_in
     assetManager.registerLocator(Main.basepath_assets, classOf[FileLocator])
 
     init_jme_interface()
+    log_debug("init: appstates")
     setupAppStates
+    log_debug("init: igog")
     Igog.init(Main.basepath_igog_db)
-
+    log_debug("init: terrain")
     Terrain.init(this)
     Scene_graph_interface init (this)
+    log_debug("init: player")
     Player.init(this)
+    log_debug("init: light")
     yacg.jme.Light.init(rootNode)
+    log_debug("init: lifescriptscheduler")
     Lifescript_scheduler.init
+    log_debug("init: sky")
     yacg.jme.Sky.init(this)
+    log_debug("init: gui")
     Gui.init(this, this.audioRenderer, guiViewPort, settings.getWidth, settings.getHeight)
+    log_debug("init: audio")
     audio.Audio.init(assetManager, rootNode)
+    //log_debug("init: fog")
     //yacg.jme.Fog.init(this.asset_mgr, this.viewport, rootNode)
-
-    bla
-    blubb
-    //yacg.dialogSystem.DialogTest.__start__
-    
+    log_debug("init: IgoMaterialTest")
+    initIgoMaterialTest
+    //log_debug("init: IgoMaterialPPFilter")
+    //initPPFilter
+   
   }
 
   
@@ -159,15 +168,14 @@ class Main extends SimpleApplication with Logger with ActionListener with Jme_in
   }
   
   
-  def bla {
+  def initIgoMaterialTest {
     var material = new Material(assetManager, "Materials/tksGrass.j3md") //
     //this.asset_mgr.loadMaterial("Materials/tksGrass.j3md")
     //Scene_graph_interface.get_igo_by_id("bill").get.geo.setMaterial(material)
     Scene_graph_interface.get_igo_by_id("frank").get.geo.setMaterial(material)
-
   }
 
-  def blubb {
+  def initPPFilter {
     val processor = new FilterPostProcessor(assetManager)
     val filter = new OldFilmFilter(new ColorRGBA(112f / 255f, 66f / 255f, 20f / 255f, 1f), 0.75f, 0.08f, 0.4f, 1.1f)
 /*    filter.setNoiseDensity(0.01f)

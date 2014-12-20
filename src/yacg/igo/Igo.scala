@@ -24,13 +24,14 @@ object Igo {
 abstract class Igo(val name: String, val file_name: String, assetManager: AssetManager, enqueue: yacg.jme.Jme_interface.enqueueLamba = null)
   extends Lifescript_interpreter with Savable {
 
-  var fw = new float_wrap(0.016f) //experience value on core i3 laptop, HD-graphics
-  var geo: Spatial = _ //Geometry extends Spatial
+  var fw = new float_wrap(0.016f) 	//experience value on core i3 laptop, HD-graphics
+  var geo: Spatial = _ 				//Geometry extends Spatial
   var typeName: String = "igo"
 
   log_debug("creating new igo with id=" + name + " from file " + file_name)
 
   geo = assetManager.loadModel("Models/" + file_name) //.j3o
+  geo.setName(name)
   geo.setUserData("id", name)
   geo.setUserData("igo_ref", this)
   geo.setLocalScale(new Vector3f(4, 4, 4))
