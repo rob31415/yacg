@@ -1,0 +1,6 @@
+Material tksGrass : Materials/tksGrass.j3md { 
+  MaterialParameters {
+    m_MyTex : Flip Textures/terrain/vegetation1.bmp
+    m_Shininess : 20.0
+  }
+}

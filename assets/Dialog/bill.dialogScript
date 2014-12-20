@@ -1,0 +1,67 @@
+def start
+	if Partner.isset("hatesPlayer")
+		Partner.says "Get outta here already you twat!"
+		choiceGreetingBad
+	else
+		Partner.says "Good day sir. How may I help you?"
+		choiceGreeting
+	end
+end
+
+def choiceGreeting
+	if Player.isset("hasAccount")
+		choice({"Soup up some cash dude!" => :drawcash,
+			    "Lemme out of the account" => :revokeaccount,
+				"C ya" => :exit})
+	else
+		choice({"Well, I've been meaning to get Informed about taking a credit from your bank." => :creditinfo,
+				"I'd like to open an account with your bank." => :openaccount,
+				"C ya" => :exit,
+				"I just wanted to tell you, you're a bankster and a disgraceful sob!" => :endbad})
+	end
+end
+
+def choiceGreetingBad
+		choice({"I'm so unspeakably sorry. i'll get down on all four and really lick boot..." => :friendsagain,
+				"Right. Bye!" => :exit})
+end
+
+def revokeaccount
+	Partner.says "All right, here's all your cash and your account is closed"
+	Player.unset "hasAccount"
+	wait 3
+	choiceGreeting
+end
+
+def creditinfo
+	Partner.says "Ok, first, you need to *open an account*. Then I can give you *1000$ max.* with a 10% interest rate."
+	wait
+	choiceGreeting
+end
+
+def openaccount
+ 	Partner.says "Ok, here you go sir. Fill out the forms, if you'd be so kind."
+	Player.set "hasAccount"
+	wait 3
+	exit
+end
+
+def drawcash
+ 	Partner.says "Ok, take this money here."
+	wait 3
+	exit
+end
+
+def endbad
+ 	Partner.says "Oh yes? Get out and don't come back."
+ 	Partner.set "hatesPlayer"
+	wait 3
+ 	exit
+end
+
+def friendsagain
+ 	Partner.says "Meh. Disgusting whiny bitch."
+ 	Partner.unset "hatesPlayer"
+	wait 3
+	choiceGreeting
+end

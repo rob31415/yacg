@@ -15,6 +15,7 @@ import yacg.persistence.Db
 
 object Igog extends Logger {
   type location_type = HashMap[String, (Float, Float)]
+  val SCALE: Float = 4.0f;
 
   def init(db_path: String) {
     Db.init(db_path)
@@ -68,6 +69,7 @@ object Igog extends Logger {
         var igo: Igo = Igo.createInstance(element._1, name, file_name, jme_interface)
 
         igo.geo.setLocalTranslation(x, Terrain.get_mesh_height(x, y), y)
+        igo.geo.setLocalScale(SCALE)
         //npc.geo.addControl(new RigidBodyControl(1.0f))
         //jme_interface.bullet_app_state.getPhysicsSpace().add(npc.geo)
         jme_interface.root_node.attachChild(igo.geo)
@@ -112,7 +114,7 @@ object Igog extends Logger {
     val retval = new scala.collection.mutable.LinkedList[Igo]
     val query = "start result=node(*) where has(result.type) and result.type = 'static' return result"
 
-    Db.execute(query, (node: org.neo4j.graphdb.Node) => {
+    Db.execute[org.neo4j.graphdb.Node](query, (node: org.neo4j.graphdb.Node) => {
       val file_name = node.getProperty("file_name").asInstanceOf[String]
       val x = node.getProperty("x").toString().toFloat
       val y = node.getProperty("y").toString().toFloat
@@ -168,5 +170,33 @@ object Igog extends Logger {
     }
 */
   }
+
+  def setPropertyOnPlayer(propName: String) {
+    Db.execute("start result=node(*) where has(result.type) and result.type = 'player' set result." + propName + "=true return result")
+  }
+
+  def removePropertyFromPlayer(propName: String) {
+    Db.execute("start result=node(*) where has(result.type) and result.type = 'player' set result." + propName + "=null return result")
+  }
+
+  def playerHasProperty(propName: String): Boolean = hasProperty("start result=node(*) where has(result.type) and result.type = 'player' and has(result." + propName + ") return count(*) as result")
+
+  def hasProperty(query: String): Boolean = {
+    var retval = false
+    Db.execute(query, (value: Long) => { retval = value > 0 })
+    retval
+  }
+
+  def setPropertyOnIgo(id: String, propName: String) {
+    Db.execute("start result=node(*) where has(result.name) and has(result.type) and result.name = '" + id.replace("'", "\\'") + "' and result.type='npc' set result." + propName + "=true return result")
+  }
+
+  def removePropertyFromIgo(id: String, propName: String) {
+    Db.execute("start result=node(*) where has(result.name) and has(result.type) and result.name = '" + id.replace("'", "\\'") + "' and result.type='npc' set result." + propName + "=null")
+  }
+
+  //java.lang.Long cannot be cast to org.neo4j.graphdb.Node
+  def igoHasProperty(id: String, propName: String): Boolean =  hasProperty("start result=node(*) where has(result.name) and has(result.type) and has(result." + propName + ") and result.name ='" + id.replace("'", "\\'") + "' and result.type='npc' return count(*) as result")
+
 
 }

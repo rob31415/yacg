@@ -25,7 +25,6 @@ import org.neo4j.server.configuration.{Configurator => serverConfig}
  * delete property: start n=node(30524) set n.modelfile=n.file_name, n.file_name=null / or delete n.name
  * 
  * start n=node(*) where has(n.type) return n
-
  */
 
 
@@ -84,7 +83,7 @@ object Db extends Logger {
 
   // query must return a column named "result".
   // given lambda is executed for every row.
-  def execute(query: String, lambda: (Node) => (Unit)) {
+  def execute[T](query: String, lambda: (T) => (Unit)) {
     log_debug(query)
 
     if (graph_db.isDefined) {
@@ -96,7 +95,7 @@ object Db extends Logger {
 
         var it = result.columnAs("result")
         while (it.hasNext) {
-          lambda(it.next.asInstanceOf[Node])
+          lambda(it.next.asInstanceOf[T])
         }
 
         tx.success

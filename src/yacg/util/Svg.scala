@@ -81,7 +81,7 @@ object Svg extends Logger {
     //log_debug(xml.toString)
 
     val staticIds = new scala.collection.mutable.ListBuffer[Long]
-    Db.execute("start result=node(*) where has(result.type) and result.type='static' return result", (node: org.neo4j.graphdb.Node) => {
+    Db.execute[org.neo4j.graphdb.Node]("start result=node(*) where has(result.type) and result.type='static' return result", (node: org.neo4j.graphdb.Node) => {
       staticIds += (node.getId())
     })
     

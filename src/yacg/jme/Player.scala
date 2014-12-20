@@ -20,6 +20,8 @@ import com.jme3.scene.Node
 import com.jme3.input.controls.InputListener
 import yacg.util.Svg
 import yacg.Main
+import yacg.dialogSystem.Dialog
+import yacg.gui.Gui
 
 object Player extends Logger {
   private var left: Boolean = false;
@@ -36,18 +38,18 @@ object Player extends Logger {
 
   def init(jme_interface: Jme_interface) {
     this.jme_interface = jme_interface
-    val capsuleShape = new CapsuleCollisionShape(0.5f, 1f, 1)
+    val capsuleShape = new CapsuleCollisionShape(2f, 2f, 2)
 
     //val capsuleShape = new BoxCollisionShape()
     //player = new BetterCharacterControl(1.0f,1.0f,1.0f) //capsuleShape, 0.05f)
     //player.setGravity(new Vector3f(0,-10,0))
     player = new CharacterControl(capsuleShape, 0.01f)
-    player.setGravity(10.4f)
+    player.setGravity(3.4f)
 
     player.setJumpSpeed(20)
     player.setFallSpeed(30)
     player.setGravity(10)
-    player.setPhysicsLocation(new Vector3f(0, 400, 0))
+    player.setPhysicsLocation(new Vector3f(-2561, 30, -831.6f))
 
     log_debug("bulletAppState ps.add player")
     jme_interface.bullet_app_state.getPhysicsSpace().add(player);
@@ -81,6 +83,8 @@ object Player extends Logger {
       "y" -> new KeyTrigger(KeyInput.KEY_Y),
       "r" -> new KeyTrigger(KeyInput.KEY_R),
       "m" -> new KeyTrigger(KeyInput.KEY_M),
+      "c" -> new KeyTrigger(KeyInput.KEY_C),
+      "return" -> new KeyTrigger(KeyInput.KEY_RETURN),
       "o" -> new KeyTrigger(KeyInput.KEY_O))
 
     keys.foreach(keyval => { input_mgr.addMapping(keyval._1, keyval._2); input_mgr.addListener(input_listener, keyval._1) })
@@ -115,10 +119,17 @@ object Player extends Logger {
         case "i" => {Svg.update_igog(Main.basepath_assets + "/yacg_igos.svg"); Scene_graph_interface.reinit() } 
         case "y" => {log_debug(yacg.persistence.Db.dump); log_debug(Scene_graph_interface.dump_current_locations); Scene_graph_interface.getIgosByType()}
         case "m" => Terrain.createMosaic(Main.basepath_assets + "/terrainTextureMosaic.png")
+        case "c" => Dialog.initiate(findDialogPartnerId())
+        case "return" => Dialog.pickChoice(Gui.getCurrentChoiceNumber())
         case _ =>  //log_debug("ignored key " + binding)
       }
     }
 
+  }
+  
+  def findDialogPartnerId(): String = {
+    // new Dialog(Scene_graph_interface.get_igo_by_id("bill").get)
+    "bill"
   }
 
   def pick_output() {
@@ -130,9 +141,9 @@ object Player extends Logger {
   }
 
   def update(camera: Camera, tpf: Float) {
-    camDir.set(camera.getDirection()).multLocal(56.6f);	//6.6f
-    camLeft.set(camera.getLeft()).multLocal(50.4f);	//2.4f
-    camUp.set(camera.getUp()).multLocal(52.4f);
+    camDir.set(camera.getDirection()).multLocal(1.0f);	//6.6f	56
+    camLeft.set(camera.getLeft()).multLocal(1.0f);	//2.4f	50
+    camUp.set(camera.getUp()).multLocal(1.0f);	//52
     walkDirection.set(0, 0, 0);
     if (left) {
       walkDirection.addLocal(camLeft);

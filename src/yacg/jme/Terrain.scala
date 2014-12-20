@@ -29,6 +29,7 @@ import jme3tools.converters.ImageToAwt
 import com.jme3.terrain.heightmap.HillHeightMap
 import com.jme3.terrain.heightmap.AbstractHeightMap
 import scala.sys.process._
+import com.jme3.math.FastMath
 
 class Counter {
   private var layer_counter_diff = -1
@@ -131,21 +132,26 @@ object Terrain extends Logger {
       }
 
       def tileAttached(cell: Vector3f, quad: TerrainQuad) {
+        log_debug("attaching terrain tile" + cell.toString())
+
         while (quad.getControl(classOf[RigidBodyControl]) != null) {
           quad.removeControl(classOf[RigidBodyControl]);
         }
+
         quad.addControl(new RigidBodyControl(new HeightfieldCollisionShape(quad.getHeightMap(), terrain.getLocalScale()), 0));
         jme_interface.bullet_app_state.getPhysicsSpace().add(quad)
         quad.setMaterial(getTerrainMaterial(cell.x.toInt, cell.z.toInt, jme_interface.asset_mgr))
-        log_debug("attaching terrain tile" + cell.toString())
+
+        //Terrain.createVegetation(jme_interface, cell.x.toInt, cell.z.toInt)
+
         Scene_graph_interface.refresh()
       }
 
       def tileDetached(cell: Vector3f, quad: TerrainQuad) {
+        log_debug("detaching terrain tile" + cell.toString())
         if (quad.getControl(classOf[RigidBodyControl]) != null) {
           jme_interface.bullet_app_state.getPhysicsSpace().remove(quad);
           quad.removeControl(classOf[RigidBodyControl]);
-          log_debug("detaching terrain tile" + cell.toString())
         }
       }
 
@@ -177,7 +183,7 @@ object Terrain extends Logger {
 
   def get_mesh_height(x: Float, y: Float): Float = {
     val y_h = terrain.getHeight(new Vector2f(x, y))
-    val y_hm = terrain.getHeightmapHeight(new Vector2f(x, y))
+    //val y_hm = terrain.getHeightmapHeight(new Vector2f(x, y))
 
     //log_debug("terrain.getHeight=" + y_h + " terrain.getHeightmapHeight=" + y_hm)
 
@@ -260,8 +266,7 @@ object Terrain extends Logger {
     addTexture("DiffuseMap_5", pathPrefix + brownDirt, "DiffuseMap_5_scale", 32)
     addTexture("DiffuseMap_6", pathPrefix + lightgreySand, "DiffuseMap_6_scale", 32)
     addTexture("DiffuseMap_7", pathPrefix + greenGrass, "DiffuseMap_7_scale", 32)
-    
-    
+
     /*
     addTexture("NormalMap", "Textures/misc/stone/stone_ln.jpg")
     addTexture("NormalMap_1", "Textures/misc/stone/stone_ln.jpg")
@@ -286,9 +291,104 @@ object Terrain extends Logger {
       prefix + greenGrass + "\" -thumbnail 300x300 -set caption %t -background grey40 -pointsize 9 -density 144x144 +polaroid -resize 50%  -background white -geometry +1+1 -tile 4x4 -title \"YACG Terrain Textures\" " + filename
 
     log_debug("use this to create mosaic image:\n " + cmd + "\n")
-    
+
+    //@TODO: why doesnt that work? leerzeichen problem.
     Process(cmd)!
     //val output = cmd.!!
+  }
+
+  def createVegetation(jme_interface: Jme_interface, terrainCellX: Integer, terrainCellY: Integer) = {
+  
+    log_debug("createVegetation")
+
+    val offsetX = patch_size * terrainCellX * Terrain.scale_z;
+    val offsetY = patch_size * terrainCellY * Terrain.scale_x;
+    val offsetXEnd = (offsetX + (patch_size * Terrain.scale_z))
+    val offsetYEnd = (offsetY + (patch_size * Terrain.scale_x))
+
+    //400-1700x  946-1200y  is red
+
+    val image = jme_interface.asset_mgr.loadTexture("Textures/terrain/vegetation1.bmp").getImage()
+    val ir = ImageRaster.create(image)
+    var rnd = new scala.util.Random
+    rnd.setSeed(851974)
+    val step = 100
+    var counter = 0
+    var tempVector = new com.jme3.math.Vector3f()
+    var r: Integer = 0
+    var red: Integer = 0
+
+    log_debug("createVegetation " + offsetX + " " + offsetY + " " + offsetXEnd + " " + offsetYEnd)
+
+    var x = offsetX
+    var y = offsetY
+
+    while (x < offsetXEnd) {
+      y = offsetY
+      while (y < offsetXEnd) {
+
+        tempVector.x = y;
+        tempVector.z = x;
+        var bla = yacg.util.coordConversion.threeDToImage(tempVector)
+
+        r = rnd.nextInt(255)
+        red = 250 //((ir.getPixel(bla._1, bla._2).r) * 255).toInt
+
+        // log_debug("random=" + r + " red=" + red + " x=" + bla._1 + " y=" + bla._2 + " 3dX=" + x + " 3dY=" + y)
+
+        if (r < red) {
+          createShrub(tempVector, jme_interface)
+          counter += 1
+        }
+
+        y += step
+      }
+      x += step
+    }
+
+    /*
+    offsetX to offsetXEnd by step map { x =>
+      {
+        offsetY to offsetYEnd by step map { y =>
+          {
+
+            tempVector.x = y;
+            tempVector.z = x;
+            var bla = yacg.util.coordConversion.threeDToImage(tempVector)
+
+            //log_debug("rrrr " + bla._1 + " " + bla._2 + " ; " + x + " " + y)
+
+            if (r < ir.getPixel(bla._1, bla._2).r * 255) {
+              log_debug("rrrr " + r + " " + ir.getPixel(bla._1, bla._2).r * 255)
+              createShrub(bla._1, bla._2, jme_interface)
+              counter += 1
+            }
+          }
+        }
+      }
+    }
+    * 
+    */
+
+    log_debug("created " + counter + "shrubs")
+  }
+
+  def createShrub(location: com.jme3.math.Vector3f, jme_interface: Jme_interface) {
+    val geo = jme_interface.asset_mgr.loadModel("Models/shrub1.blend")
+    geo.setLocalScale(new Vector3f(40, 20, 40))
+
+    //val xyz = yacg.util.coordConversion.ImageToThreeD(x, y)
+    //xyz.y = this.get_mesh_height(xyz.z, xyz.x)
+
+    location.y = this.get_mesh_height(location.z, location.x)
+
+    log_debug("createShrub " + location.x + " " + location.y + " " + location.z)
+
+    geo.setLocalTranslation(location)
+    geo.rotate(180f * FastMath.DEG_TO_RAD, util.Random.nextInt(130) * FastMath.DEG_TO_RAD, 0f) //.setLocalRotation(new Quarternion())
+    //geo.addControl(new RigidBodyControl(1.0f))
+    //bulletAppState.getPhysicsSpace().add(geo)
+    jme_interface.root_node.attachChild(geo)
   }
 
 }

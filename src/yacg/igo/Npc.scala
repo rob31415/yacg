@@ -15,7 +15,7 @@ import yacg.jme.Jme_interface
 class Npc(name: String, file_name: String, jme_interface: Jme_interface)
   extends Mobile(name, file_name, jme_interface.asset_mgr, jme_interface.enqueue)
   with Logger
-  with Moveable {
+  {
 
   typeName = "npc"
 

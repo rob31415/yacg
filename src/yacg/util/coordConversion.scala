@@ -20,8 +20,8 @@ object coordConversion {
   def ImageToThreeD(ix: Float, iy: Float): Vector3f =
     {
       val x = (ix - Terrain.patch_size) * Terrain.scale_z
-      val y = (iy - Terrain.patch_size) * Terrain.scale_x
-      return new Vector3f(x, 0, y)
+      val z = (iy - Terrain.patch_size) * Terrain.scale_x * -1
+      return new Vector3f(x, 0, z)
     }
 
 }

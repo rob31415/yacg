@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<nifty>
+	<useStyles filename="nifty-default-styles.xml" />
+	<useControls filename="nifty-default-controls.xml" />
+	<screen id="start" controller="yacg.gui.DialogController">
+		<layer childLayout="absolute" id="layer0">
+			<control controller="de.lessvoid.nifty.controls.label.LabelControl" font="aurulent-sans-16.fnt" height="50px" id="text"
+				name="label" text="label1" width="193px" x="281" y="32" />
+			<control height="65px" id="listo" name="listBox" width="515px" x="149" y="499">
+			</control>
+			<interact onClick="bla()" />
+		</layer>
+	</screen>
+</nifty>

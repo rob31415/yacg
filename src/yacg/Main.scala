@@ -50,9 +50,6 @@ import com.jme3.post.FilterPostProcessor
 import com.jme3.shadow.PssmShadowRenderer
 import com.jme3.shadow.PssmShadowRenderer.FilterMode
 import com.jme3.system.AppSettings
-import com.jme3.niftygui.NiftyJmeDisplay
-import de.lessvoid.nifty.screen._
-import de.lessvoid.nifty._
 import scala.util.Random
 import com.jme3.post.filters.FogFilter
 import yacg.time.In_game_clock
@@ -70,6 +67,13 @@ import com.jme3.app.Application
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import yacg.util.Logger
+import com.jme3.niftygui.NiftyJmeDisplay
+import de.lessvoid.nifty.screen._
+import de.lessvoid.nifty._
+import com.jme3.post._
+import filter.OldFilmFilter
+import yacg.gui.AppStateDialog
+import yacg.gui.AppStateRunning
 
 object Main extends Logger {
   val basepath_assets = System.getProperty("user.dir") + "/assets/"
@@ -107,15 +111,15 @@ object Main extends Logger {
     app.setShowSettings(false);
     app.setSettings(settings);
     app.setPauseOnLostFocus(false)
-    
+
     //MouseInput.get().setCursorVisible(true);    
     //org.lwjgl.input.Mouse.setGrabbed(false)
-    
+
     app.start
   }
 }
 
-class Main extends SimpleApplication with Logger with ActionListener with ScreenController with Jme_interface with Gui {
+class Main extends SimpleApplication with Logger with ActionListener with Jme_interface {
 
   var fw = new float_wrap(1.0f)
 
@@ -125,7 +129,7 @@ class Main extends SimpleApplication with Logger with ActionListener with Screen
     assetManager.registerLocator(Main.basepath_assets, classOf[FileLocator])
 
     init_jme_interface()
-    init_bullet()
+    setupAppStates
     Igog.init(Main.basepath_igog_db)
 
     Terrain.init(this)
@@ -134,9 +138,47 @@ class Main extends SimpleApplication with Logger with ActionListener with Screen
     yacg.jme.Light.init(rootNode)
     Lifescript_scheduler.init
     yacg.jme.Sky.init(this)
-    init_gui(this, this.audioRenderer, viewport, settings.getWidth, settings.getHeight)
+    Gui.init(this, this.audioRenderer, guiViewPort, settings.getWidth, settings.getHeight)
     audio.Audio.init(assetManager, rootNode)
     //yacg.jme.Fog.init(this.asset_mgr, this.viewport, rootNode)
+
+    bla
+    blubb
+    //yacg.dialogSystem.DialogTest.__start__
+    
+  }
+
+  
+  def setupAppStates {
+    this.stateManager.attach(new AppStateRunning)
+    this.stateManager.attach(new AppStateDialog)
+    //TODO invenStory
+    bullet_app_state = new BulletAppState()
+    log_debug("attach bulletappstate to statemgr")
+    stateManager.attach(bullet_app_state)
+  }
+  
+  
+  def bla {
+    var material = new Material(assetManager, "Materials/tksGrass.j3md") //
+    //this.asset_mgr.loadMaterial("Materials/tksGrass.j3md")
+    //Scene_graph_interface.get_igo_by_id("bill").get.geo.setMaterial(material)
+    Scene_graph_interface.get_igo_by_id("frank").get.geo.setMaterial(material)
+
+  }
+
+  def blubb {
+    val processor = new FilterPostProcessor(assetManager)
+    val filter = new OldFilmFilter(new ColorRGBA(112f / 255f, 66f / 255f, 20f / 255f, 1f), 0.75f, 0.08f, 0.4f, 1.1f)
+/*    filter.setNoiseDensity(0.01f)
+    filter.setScratchDensity(0.02f)
+    filter.setVignettingValue(0.02f)
+    filter.setColorDensity(0.03f)
+    *
+    */
+    filter.setFilterColor(new com.jme3.math.ColorRGBA(112f / 255f, 66f / 255f, 20f / 255f, 1f))
+    processor.addFilter(filter)
+    viewport.addProcessor(processor)
   }
 
   override def destroy {
@@ -151,12 +193,6 @@ class Main extends SimpleApplication with Logger with ActionListener with Screen
 
   override def onAction(binding: String, isPressed: Boolean, tpf: Float) = Player.onAction(binding, isPressed, tpf)
 
-  def init_bullet() {
-    bullet_app_state = new BulletAppState()
-    log_debug("attach bulletappstate to statemgr")
-    stateManager.attach(bullet_app_state)
-  }
-
   def init_jme_interface() {
     root_node = rootNode
     asset_mgr = assetManager
@@ -164,7 +200,6 @@ class Main extends SimpleApplication with Logger with ActionListener with Screen
     viewport = viewPort
     input_mgr = inputManager
     input_listener = this
-    screen_controller = this
     gui_node = guiNode
   }
 

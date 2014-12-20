@@ -1,0 +1,24 @@
+MaterialDef tksGrass {
+
+  MaterialParameters {
+    Float m_Shininess
+    Texture2D m_MyTex
+  }
+  
+  Technique {
+    VertexShader GLSL100 : Shaders/tksGrass.vert
+    FragmentShader GLSL100 : Shaders/tksGrass.frag
+
+    WorldParameters {
+      Time
+      WorldViewProjectionMatrix
+    }
+    
+    RenderState {
+      Blend Alpha
+      // Color Alpha Additive Modulate
+      // http://hub.jmonkeyengine.org/javadoc/com/jme3/material/RenderState.BlendMode.html
+    }
+  } 
+
+}

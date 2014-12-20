@@ -18,9 +18,9 @@ import yacg.igo._
 
 /*
  * there are 3 different "storage locations" here:
- * the igog, the sg, and the igo
+ * the ingameobjectgraph (igog), the scenegraph (sg), and the igo
  * 
- * the igog is an interface to the database - it represents serialized igo-s. when running, you can't find a igo-instance via igog.
+ * the igog is an interface to the database - it represents persisted igo-s. at runtime, you can't find an igo-instance via igog.
  * a spatial is a member of a igo.
  * the spatial is put in the sg.
  * to get the igo via id from the sg, the igo is referenced via id from it's member spatial.

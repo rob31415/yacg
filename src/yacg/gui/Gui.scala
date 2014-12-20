@@ -12,17 +12,23 @@ import de.lessvoid.nifty.Nifty
 import de.lessvoid.nifty.screen.Screen
 import com.jme3.math.ColorRGBA
 import yacg.util.Logger
+import com.jme3.niftygui.NiftyJmeDisplay
+import de.lessvoid.nifty.screen._
+import de.lessvoid.nifty._
+import de.lessvoid.nifty.elements.render.TextRenderer
+import de.lessvoid.nifty.controls.ListBox
+import de.lessvoid.nifty.controls.Label
 
-trait Gui extends Logger {
+object Gui extends Logger with ScreenController {
   var nifty: Nifty = _
-  
-  def init_gui(jme_interface: Jme_interface, audio_renderer: AudioRenderer, viewport: ViewPort, width: Float, height: Float) {
-    /*
+  var textRenderer: TextRenderer = _
+  var label: Label = _
+
+  def init(jme_interface: Jme_interface, audio_renderer: AudioRenderer, viewport: ViewPort, width: Float, height: Float) {
     val niftyDisplay = new NiftyJmeDisplay(jme_interface.asset_mgr, jme_interface.input_mgr, audio_renderer, viewport)
     nifty = niftyDisplay.getNifty()
-    nifty.fromXml("Interface/gui.xml", "start", jme_interface.screen_controller)
     viewport.addProcessor(niftyDisplay)
-    */
+
     createPickMark(jme_interface.gui_node, width, height)
   }
 
@@ -47,6 +53,35 @@ trait Gui extends Logger {
     val geo = Scene_graph_interface.createGeometryFromMesh(box, "pick_mark", new Vector3f(0, 0, 0), ColorRGBA.Red)
     geo.setLocalTranslation(width / 2, height / 2, 0);
     gui_node.attachChild(geo);
+  }
+
+  def showDialog() {
+    nifty.fromXml("Interface/gui2.xml", "start", this)
+    label = nifty.getCurrentScreen().findNiftyControl("text", classOf[Label])
+  }
+  
+  def exit() {
+    getChoiceDisplay().clear()
+    nifty.exit()
+  }
+
+  def displayText(text: String) {
+    //val x = label.getElement().getRenderer(classOf[TextRenderer]).setText(text)
+    label.setText(text)
+    log_debug("displayText: " + text)
+  }
+
+  private def getChoiceDisplay(): ListBox[String] = {
+    nifty.getCurrentScreen().findNiftyControl("listo", classOf[ListBox[String]])
+  }
+
+  def displayChoice(lines: List[Object]) {
+    getChoiceDisplay().clear()
+    lines.foreach(element => getChoiceDisplay().addItem(element.toString()))
+  }
+
+  def getCurrentChoiceNumber(): Int = {
+    getChoiceDisplay().getFocusItemIndex()
   }
 
 }
