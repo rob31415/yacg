@@ -54,7 +54,7 @@ neurotizismus - emotional stabil, instabil
 begeisterungsfähigkeit - introvertiert, extrovertiert
 offenheit - offen, verschlossen
 verträglichkeit - verträglich, unverträglich
-gewissenhaftigkeit - gewissenhaft, slackerhaft
+gewissenhaftigkeit - gewissenhaft, schlampig
 
 
 
@@ -64,11 +64,20 @@ bindung - vermeidend, sicher
 nähe - eigenständig, nähebedürftig
 sex - romantisch, triebstark, verspielt-polygam
 fürsorge - verantwortung fordernd, hilfsbereit
-extraversion - redselug, unternehmungslustig
+extraversion - redselig, unternehmungslustig
 pragmatismus - gewissenhaft, anspruchsvoll
 führung - unterfordernd, dominant
 empfindlichkeit - leidenschaftlich, sensibel
 konfliktbewältigung - aggressiv, diplomatisch
 
 
+
+schema nach k. lassen
+
+kontinuum zwischen negativem und hyperpositivem pol
+
+selbstwert (wertlos / wertvoll / ich bin mehr wert)
+intimität (-süchtig / wohlfühlen in beziehungen eingebunden zu sei / -scheu)
+aus sich heraus gehen (ungehemmt / expressiv / gehemmt)
+interdependenz (abhängig / wechselseitig abhängig / verbissen unabhängig)
 
