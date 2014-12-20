@@ -1,70 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="java"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/applet-loader.zip"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/eventbus.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jbullet.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jglfont-core.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jinput.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-android.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-blender.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-bullet.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-bullet-natives.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-bullet-natives-android.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-core.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-desktop.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-effects.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-ios.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-jbullet.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-jogg.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-jogl.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-lwjgl.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-lwjgl-natives.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-networking.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-niftygui.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-openal-soft-natives-android.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-plugins.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-terrain.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jME3-testdata.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jMonkeyEngine3-javadoc.zip"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jMonkeyEngine3-sources.zip"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/joal.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/j-ogg-oggd.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/j-ogg-vorbisd.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/jogl-all.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/launch4j.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/lwjgl.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/nifty.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/nifty-default-controls.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/nifty-default-controls-javadoc.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/nifty-javadoc.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/nifty-style-black.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/proguard.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/retrace.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/stack-alloc.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/vecmath.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/xmlpull-xpp3.jar"/>
-	<classpathentry kind="lib" path="/opt/jmonkeyplatform/jmonkeyplatform/libs/xstream.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/slf4j/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/slf4j/slf4j-api-1.6.6.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/slf4j/slf4j-log4j12-1.6.6.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/concurrentlinkedhashmap-lru-1.3.1.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/geronimo-jta_1.1_spec-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/lucene-core-3.6.2.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-cypher-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-graph-algo-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-graph-matching-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-jmx-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-kernel-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-lucene-index-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-shell-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-udc-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/org.apache.servicemix.bundles.jline-0.9.94_1.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/scala-library-2.10.0.jar"/>
-	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/server-api-1.9.5.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/asm-3.1.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/bcprov-jdk16-140.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/commons-beanutils-1.8.0.jar"/>
@@ -97,5 +39,66 @@
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/rrd4j-2.0.7.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9_server/slf4j-api-1.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/concurrentlinkedhashmap-lru-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/lucene-core-3.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-cypher-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-graph-algo-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-graph-matching-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-jmx-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-kernel-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-lucene-index-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-shell-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/neo4j-udc-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/org.apache.servicemix.bundles.jline-0.9.94_1.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/neo4j_1.9/server-api-1.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/applet-loader.zip"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/eventbus.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jbullet.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jglfont-core.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jinput.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-android.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-blender.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-bullet.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-bullet-natives.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-bullet-natives-android.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-core.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-desktop.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-effects.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-ios.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-jbullet.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-jogg.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-jogl.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-lwjgl.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-networking.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-niftygui.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-openal-soft-natives-android.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-plugins.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-terrain.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jME3-testdata.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jMonkeyEngine3-javadoc.zip"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jMonkeyEngine3-sources.zip"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/joal.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/j-ogg-oggd.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/j-ogg-vorbisd.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/jogl-all.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/launch4j.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/lwjgl.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/nifty.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/nifty-default-controls.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/nifty-default-controls-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/nifty-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/nifty-style-black.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/proguard.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/retrace.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/stack-alloc.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/vecmath.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/xmlpull-xpp3.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jmonkey/xstream.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/jruby.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/scala-xml-2.11.0-M4.jar"/>
+	<classpathentry kind="lib" path="/home/rob/development/eclipse_workspaces/yacg_2/lib/scala-parser-combinators-2.11.0-M4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
